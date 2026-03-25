@@ -24,7 +24,7 @@ export function ExpensePieChart({ data }: { data: { categoria: string; _sum: { v
           ))}
         </Pie>
         <Tooltip
-          formatter={(v: number) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          formatter={(v: unknown) => `R$ ${(v as number).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
           contentStyle={{ background: '#111118', border: '1px solid rgba(0,180,216,0.2)', borderRadius: 8 }}
         />
         <Legend wrapperStyle={{ fontSize: 11 }} />
