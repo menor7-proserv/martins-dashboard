@@ -1,65 +1,155 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { KpiCard } from '@/components/ui/KpiCard'
+import { ProgressBar } from '@/components/ui/ProgressBar'
+import { NeonBadge } from '@/components/ui/NeonBadge'
+import { RevenueChart } from '@/components/charts/RevenueChart'
+import { ExpensePieChart } from '@/components/charts/ExpensePieChart'
+import { ExportButton } from '@/components/ui/ExportButton'
+import { formatCurrency } from '@/lib/formatters'
+
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+const PRAZO_ORDER = ['AVISTA', '7D', '30D', '60D', '90D']
+
+export default function DashboardPage() {
+  const now = new Date()
+  const [mes, setMes] = useState(now.getMonth() + 1)
+  const [ano, setAno] = useState(now.getFullYear())
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    fetch(`/api/dashboard?mes=${mes}&ano=${ano}`)
+      .then(r => r.json())
+      .then(setData)
+  }, [mes, ano])
+
+  if (!data) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '16rem' }}>
+      <div className="neon-text animate-neon-pulse text-lg">Carregando...</div>
     </div>
-  );
+  )
+
+  const totalReceber = data.contasAReceber.reduce((s: number, c: any) => s + (c._sum.valor ?? 0), 0)
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-text-primary">Dashboard Financeiro</h1>
+          <p className="text-text-muted text-sm">Martins Pro Serv · Esquadrias & Vidraçaria</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <select
+            value={`${mes}-${ano}`}
+            onChange={e => {
+              const [m, a] = e.target.value.split('-')
+              setMes(+m)
+              setAno(+a)
+            }}
+            className="input-field w-40 text-sm"
+          >
+            {Array.from({ length: 12 }, (_, i) => {
+              const m = i + 1
+              const a = now.getFullYear()
+              return <option key={m} value={`${m}-${a}`}>{MESES[i]} {a}</option>
+            })}
+          </select>
+          <ExportButton mes={mes} ano={ano} />
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard label="Faturamento" value={data.faturamento} color="blue" icon="💰" />
+        <KpiCard label="Despesas" value={data.despesas} color="red" icon="📉" />
+        <KpiCard label="Lucro Líquido" value={data.lucro} color={data.lucro >= 0 ? 'green' : 'red'} icon="✅" />
+        <KpiCard label="Margem" value={data.margem} format="percent" color="gold" icon="📊" />
+      </div>
+
+      {/* Contas a Receber + Metas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-card p-5"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-text-muted uppercase tracking-widest">📋 Contas a Receber</h2>
+            <span className="text-neon-blue font-bold text-sm">{formatCurrency(totalReceber)}</span>
+          </div>
+          <div className="space-y-3">
+            {PRAZO_ORDER.map(prazo => {
+              const entry = data.contasAReceber.find((c: any) => c.prazo === prazo)
+              const valor = entry?._sum?.valor ?? 0
+              const pct = totalReceber > 0 ? (valor / totalReceber) * 100 : 0
+              return (
+                <div key={prazo} className="flex items-center gap-3">
+                  <NeonBadge label={prazo} />
+                  <div className="flex-1 h-1.5 bg-bg-surface rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-neon-blue to-accent-purple rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.8, delay: 0.3 }}
+                    />
+                  </div>
+                  <span className="text-xs text-text-muted w-10 text-right">{pct.toFixed(0)}%</span>
+                  <span className="text-xs text-text-primary w-24 text-right">{formatCurrency(valor)}</span>
+                </div>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass-card p-5"
+        >
+          <h2 className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-4">🎯 Metas de {MESES[mes-1]}</h2>
+          {data.meta ? (
+            <div className="space-y-5">
+              <ProgressBar label="Faturamento" current={data.faturamento} target={data.meta.metaFaturamento} color="blue" />
+              <ProgressBar label="Lucro Líquido" current={data.lucro} target={data.meta.metaLucro} color="green" />
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <p style={{ color: '#4a5568', fontSize: '0.875rem' }}>Nenhuma meta definida para este mês.</p>
+              <a href="/metas" className="text-neon-blue text-sm hover:underline mt-2 inline-block">Definir metas →</a>
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Gráficos */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass-card p-5 lg:col-span-2"
+        >
+          <h2 className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-4">📈 Histórico 6 Meses</h2>
+          <RevenueChart data={data.historico} />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="glass-card p-5"
+        >
+          <h2 className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-4">💸 Despesas por Categoria</h2>
+          {data.despesasPorCategoria.length > 0
+            ? <ExpensePieChart data={data.despesasPorCategoria} />
+            : <p style={{ color: '#4a5568', fontSize: '0.875rem', textAlign: 'center', padding: '2rem 0' }}>Sem despesas no período</p>
+          }
+        </motion.div>
+      </div>
+    </div>
+  )
 }
