@@ -6,6 +6,7 @@ import { ClienteForm } from '@/components/forms/ClienteForm'
 import { PagamentoForm } from '@/components/forms/PagamentoForm'
 import { NeonBadge } from '@/components/ui/NeonBadge'
 import { formatCurrency, formatDate } from '@/lib/formatters'
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<any[]>([])
@@ -36,8 +37,8 @@ export default function ClientesPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">Clientes & Obras</h1>
-        <p className="text-text-muted text-sm">Gerencie obras e recebimentos por cliente</p>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f6fc' }}>Clientes &amp; Obras</h1>
+        <p style={{ color: '#8b949e', fontSize: '0.8rem', marginTop: 2 }}>Gerencie obras e recebimentos por cliente</p>
       </div>
 
       <ClienteForm onSuccess={load} />
@@ -59,34 +60,40 @@ export default function ClientesPage() {
             >
               <div
                 className="p-4 flex items-center justify-between cursor-pointer"
-                style={{ transition: 'background 0.2s' }}
+                style={{ transition: 'background 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(245,158,11,0.03)')}
+                onMouseLeave={e => (e.currentTarget.style.background = '')}
                 onClick={() => setExpanded(expanded === cliente.id ? null : cliente.id)}
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className="flex items-center justify-center text-neon-blue text-sm font-bold"
-                    style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,180,216,0.15)', border: '1px solid rgba(0,180,216,0.3)' }}
-                  >
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: 'rgba(245,158,11,0.12)',
+                    border: '1px solid rgba(245,158,11,0.3)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.8rem', fontWeight: 800, color: '#f59e0b',
+                  }}>
                     {cliente.nome.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div className="font-medium text-text-primary">{cliente.nome}</div>
-                    {cliente.telefone && <div className="text-xs text-text-muted">{cliente.telefone}</div>}
+                    <div style={{ fontWeight: 600, color: '#f0f6fc', fontSize: '0.9rem' }}>{cliente.nome}</div>
+                    {cliente.telefone && <div style={{ fontSize: '0.75rem', color: '#8b949e' }}>{cliente.telefone}</div>}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-neon-blue">{formatCurrency(totalObras)}</div>
-                    {totalPendente > 0 && <div className="text-xs text-accent-orange">{formatCurrency(totalPendente)} pendente</div>}
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#f59e0b' }}>{formatCurrency(totalObras)}</div>
+                    {totalPendente > 0 && <div style={{ fontSize: '0.75rem', color: '#fb923c' }}>{formatCurrency(totalPendente)} pendente</div>}
                   </div>
-                  <span className="text-text-muted">{expanded === cliente.id ? '▲' : '▼'}</span>
+                  {expanded === cliente.id ? <ChevronUp size={16} color="#8b949e" /> : <ChevronDown size={16} color="#8b949e" />}
                   <button
                     onClick={e => { e.stopPropagation(); deletarCliente(cliente.id) }}
-                    className="text-xs"
-                    style={{ color: 'rgba(255,77,109,0.5)', cursor: 'pointer', background: 'none', border: 'none' }}
-                    onMouseOver={e => (e.currentTarget.style.color = '#ff4d6d')}
-                    onMouseOut={e => (e.currentTarget.style.color = 'rgba(255,77,109,0.5)')}
-                  >✕</button>
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(239,68,68,0.5)', padding: 4 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(239,68,68,0.5)')}
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               </div>
 
@@ -97,31 +104,30 @@ export default function ClientesPage() {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}
+                    style={{ borderTop: '1px solid #30363d', overflow: 'hidden' }}
                   >
                     <div className="p-4 space-y-4">
                       {cliente.obras.map((obra: any) => (
-                        <div key={obra.id} className="rounded-lg p-3" style={{ background: '#1a1a24' }}>
+                        <div key={obra.id} style={{ background: '#1f2937', borderRadius: 8, padding: 12 }}>
                           <div className="flex items-center justify-between mb-2">
-                            <div className="font-medium text-text-primary text-sm">{obra.descricao}</div>
+                            <div style={{ fontWeight: 600, color: '#f0f6fc', fontSize: '0.875rem' }}>{obra.descricao}</div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-neon-blue">{formatCurrency(obra.valorTotal)}</span>
+                              <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#f59e0b' }}>{formatCurrency(obra.valorTotal)}</span>
                               <NeonBadge label={obra.status} />
                             </div>
                           </div>
-                          <div className="text-xs text-text-dim mb-3">{formatDate(obra.data)}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#4a5568', marginBottom: 8 }}>{formatDate(obra.data)}</div>
                           <div className="space-y-1.5">
                             {obra.pagamentos.map((p: any) => (
                               <div key={p.id} className="flex items-center gap-2 text-xs">
                                 <NeonBadge label={p.prazo} />
                                 <NeonBadge label={p.status} />
-                                <span className="text-text-muted">{formatCurrency(p.valor)}</span>
-                                <span className="text-text-dim">venc. {formatDate(p.vencimento)}</span>
+                                <span style={{ color: '#8b949e' }}>{formatCurrency(p.valor)}</span>
+                                <span style={{ color: '#4a5568' }}>venc. {formatDate(p.vencimento)}</span>
                                 {p.status === 'PENDENTE' && (
                                   <button
                                     onClick={() => marcarRecebido(p.id)}
-                                    className="ml-auto text-accent-green hover:underline"
-                                    style={{ cursor: 'pointer', background: 'none', border: 'none', color: '#00f5a0', fontSize: '0.75rem' }}
+                                    style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#10b981', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}
                                   >✓ Recebido</button>
                                 )}
                               </div>
@@ -138,7 +144,7 @@ export default function ClientesPage() {
           )
         })}
         {clientes.length === 0 && (
-          <div className="glass-card p-10 text-center" style={{ color: '#4a5568' }}>
+          <div className="glass-card p-10 text-center" style={{ color: '#4a5568', fontSize: '0.875rem' }}>
             Nenhum cliente cadastrado ainda. Adicione a primeira obra acima.
           </div>
         )}
