@@ -27,7 +27,7 @@ function NavItems({ pathname, onClose }: { pathname: string; onClose?: () => voi
             key={href}
             href={href}
             onClick={onClose}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 group relative"
+            className={`nav-link-hover${active ? ' nav-link-active' : ''} flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 group relative`}
             style={active ? {
               background: 'rgba(245,158,11,0.12)',
               borderLeft: '3px solid #f59e0b',
@@ -38,8 +38,6 @@ function NavItems({ pathname, onClose }: { pathname: string; onClose?: () => voi
               borderLeft: '3px solid transparent',
               paddingLeft: '0.625rem',
             }}
-            onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
-            onMouseLeave={e => { if (!active) e.currentTarget.style.background = '' }}
           >
             <Icon
               size={18}
@@ -62,12 +60,17 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
+  const hamburgerRef = useRef<HTMLButtonElement>(null)
 
-  // Close drawer on outside click
+  // Close drawer on outside click, but skip if the click is on the hamburger button
   useEffect(() => {
     if (!mobileOpen) return
     const handler = (e: MouseEvent) => {
-      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
+      if (
+        overlayRef.current &&
+        !overlayRef.current.contains(e.target as Node) &&
+        !hamburgerRef.current?.contains(e.target as Node)
+      ) {
         setMobileOpen(false)
       }
     }
@@ -77,41 +80,6 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <style>{`
-        .sidebar-desktop {
-          position: fixed;
-          left: 0; top: 0;
-          height: 100vh;
-          width: 52px;
-          background: #161b22;
-          border-right: 1px solid #30363d;
-          display: flex;
-          flex-direction: column;
-          z-index: 50;
-          overflow: hidden;
-          transition: width 220ms ease-out;
-        }
-        .sidebar-desktop:hover {
-          width: 220px;
-        }
-        .sidebar-desktop:hover .sidebar-label {
-          opacity: 1;
-          transform: translateX(0);
-        }
-        .sidebar-label {
-          opacity: 0;
-          transform: translateX(-8px);
-          transition: opacity 180ms ease-out, transform 180ms ease-out;
-        }
-        @media (max-width: 767px) {
-          .sidebar-desktop { display: none; }
-          .main-content    { margin-left: 0 !important; }
-        }
-        @media (max-width: 767px) {
-          .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; }
-        }
-      `}</style>
-
       {/* Sidebar desktop */}
       <aside className="sidebar-desktop">
         {/* Logo */}
@@ -134,13 +102,14 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
         {/* Footer */}
         <div style={{ padding: '8px 6px', borderTop: '1px solid #30363d', flexShrink: 0 }}>
           <div style={{ fontSize: 10, color: '#4a5568', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-            <span className="sidebar-label" style={{ opacity: 0 }}>v1.0 · SQLite Local</span>
+            <span className="sidebar-label">v1.0 · SQLite Local</span>
           </div>
         </div>
       </aside>
 
       {/* Mobile hamburger */}
       <button
+        ref={hamburgerRef}
         onClick={() => setMobileOpen(true)}
         style={{
           display: 'none',
@@ -151,6 +120,7 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
         }}
         className="mobile-menu-btn"
         aria-label="Abrir menu"
+        aria-expanded={mobileOpen}
       >
         <Menu size={20} />
       </button>
@@ -174,7 +144,11 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
                 <div style={{ width: 32, height: 32, background: '#f59e0b', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14, color: '#0d1117' }}>M</div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#f0f6fc' }}>Martins Pro Serv</span>
               </div>
-              <button onClick={() => setMobileOpen(false)} style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer' }}>
+              <button
+                onClick={() => setMobileOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer' }}
+                aria-label="Fechar menu"
+              >
                 <X size={18} />
               </button>
             </div>
