@@ -1,13 +1,13 @@
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer
+} from 'recharts'
 
 interface DataPoint {
-  mes: number
-  ano: number
-  faturamento: number
-  despesas: number
-  lucro: number
+  mes: number; ano: number
+  faturamento: number; despesas: number; lucro: number
 }
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -15,11 +15,14 @@ const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov'
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: '#111118', border: '1px solid rgba(0,180,216,0.2)', borderRadius: 8, padding: '0.75rem', fontSize: 12 }}>
-      <p style={{ color: '#8899aa', marginBottom: 8 }}>{label}</p>
+    <div style={{
+      background: '#161b22', border: '1px solid #30363d',
+      borderRadius: 8, padding: '0.75rem', fontSize: 12,
+    }}>
+      <p style={{ color: '#8b949e', marginBottom: 8, fontWeight: 600 }}>{label}</p>
       {payload.map((p: any) => (
-        <p key={p.name} style={{ color: p.color }}>
-          {p.name}: R$ {p.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        <p key={p.name} style={{ color: p.color, marginBottom: 2 }}>
+          {p.name}: R$ {(p.value as number).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
         </p>
       ))}
     </div>
@@ -27,25 +30,56 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export function RevenueChart({ data }: { data: DataPoint[] }) {
+  if (!data || data.length === 0) {
+    return (
+      <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a5568', fontSize: '0.875rem' }}>
+        Sem dados históricos
+      </div>
+    )
+  }
+
   const chartData = data.map(d => ({
     name: `${MESES[d.mes - 1]}/${String(d.ano).slice(2)}`,
     Faturamento: d.faturamento,
     Despesas: d.despesas,
-    Lucro: d.lucro,
   }))
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <LineChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-        <XAxis dataKey="name" stroke="#8899aa" tick={{ fontSize: 11, fill: '#8899aa' }} />
-        <YAxis stroke="#8899aa" tick={{ fontSize: 11, fill: '#8899aa' }} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+      <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
+        <defs>
+          <linearGradient id="gradFat" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%"  stopColor="#f59e0b" stopOpacity={0.4} />
+            <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.02} />
+          </linearGradient>
+          <linearGradient id="gradDesp" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.2} />
+            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+        <XAxis dataKey="name" stroke="transparent" tick={{ fontSize: 11, fill: '#8b949e' }} />
+        <YAxis stroke="transparent" tick={{ fontSize: 11, fill: '#8b949e' }} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
         <Tooltip content={<CustomTooltip />} />
-        <Legend wrapperStyle={{ fontSize: 11, color: '#8899aa' }} />
-        <Line type="monotone" dataKey="Faturamento" stroke="#00b4d8" strokeWidth={2} dot={false} />
-        <Line type="monotone" dataKey="Despesas" stroke="#ff4d6d" strokeWidth={2} dot={false} />
-        <Line type="monotone" dataKey="Lucro" stroke="#00f5a0" strokeWidth={2} dot={false} />
-      </LineChart>
+        <Legend wrapperStyle={{ fontSize: 11, color: '#8b949e' }} />
+        <Area
+          type="monotone" dataKey="Faturamento"
+          stroke="#f59e0b" strokeWidth={2}
+          fill="url(#gradFat)"
+          dot={false}
+          activeDot={{ r: 4, fill: '#f59e0b' }}
+          animationDuration={1200}
+        />
+        <Area
+          type="monotone" dataKey="Despesas"
+          stroke="#8b5cf6" strokeWidth={1.5}
+          strokeDasharray="4 2"
+          fill="url(#gradDesp)"
+          dot={false}
+          activeDot={{ r: 3, fill: '#8b5cf6' }}
+          animationDuration={1200}
+        />
+      </AreaChart>
     </ResponsiveContainer>
   )
 }
