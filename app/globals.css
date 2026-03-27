@@ -1,149 +1,129 @@
 @import "tailwindcss";
 
-/* Tailwind v4: custom tokens via @theme */
 @theme {
-  /* Cores */
-  --color-bg-primary: #0a0a0f;
-  --color-bg-card: #111118;
-  --color-bg-surface: #1a1a24;
-  --color-neon-blue: #00b4d8;
-  --color-neon-glow: #0096c7;
-  --color-neon-dim: #0077a8;
-  --color-accent-green: #00f5a0;
-  --color-accent-red: #ff4d6d;
-  --color-accent-gold: #ffd60a;
-  --color-accent-purple: #b56bff;
-  --color-accent-orange: #ff9500;
-  --color-text-primary: #f0f4f8;
-  --color-text-muted: #8899aa;
-  --color-text-dim: #4a5568;
+  /* Cores accent */
+  --color-accent-primary:   #f59e0b;
+  --color-accent-secondary: #8b5cf6;
+  --color-accent-green:     #10b981;
+  --color-accent-red:       #ef4444;
+  --color-accent-blue:      #3b82f6;
+  --color-accent-cyan:      #06b6d4;
+  --color-accent-gold:      #f59e0b;
+  --color-accent-orange:    #fb923c;
+
+  /* Backgrounds */
+  --color-bg-primary:  #0d1117;
+  --color-bg-card:     #161b22;
+  --color-bg-surface:  #1f2937;
+  --color-border:      #30363d;
+
+  /* Texto */
+  --color-text-primary: #f0f6fc;
+  --color-text-muted:   #8b949e;
+  --color-text-dim:     #4a5568;
 
   /* Animações */
-  --animate-neon-pulse: neonPulse 2s ease-in-out infinite;
-  --animate-fade-in: fadeIn 0.4s ease-out;
+  --animate-fade-in:  fadeIn 0.4s ease-out;
   --animate-slide-up: slideUp 0.4s ease-out;
 }
 
-/* Keyframes */
-@keyframes neonPulse {
-  0%, 100% { box-shadow: 0 0 10px #00b4d8, 0 0 20px rgba(0,180,216,0.25); }
-  50% { box-shadow: 0 0 20px #00b4d8, 0 0 40px rgba(0,180,216,0.4), 0 0 60px rgba(0,180,216,0.15); }
-}
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: #0a0a0f;
-  color: #f0f4f8;
+  background-color: #0d1117;
+  color: #f0f6fc;
   min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(0, 180, 216, 0.03) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 180, 216, 0.02) 0%, transparent 50%);
 }
 
-/* Scrollbar customizada */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #111118; }
-::-webkit-scrollbar-thumb { background: rgba(0,180,216,0.25); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #00b4d8; }
+::-webkit-scrollbar-track { background: #161b22; }
+::-webkit-scrollbar-thumb { background: rgba(245,158,11,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
 
-/* Utility classes */
 @layer components {
   .glass-card {
-    background-color: rgba(17, 17, 24, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 180, 216, 0.2);
+    background-color: rgba(22, 27, 34, 0.9);
+    border: 1px solid #30363d;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
   }
 
   .glass-card-hover {
-    background-color: rgba(17, 17, 24, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 180, 216, 0.2);
+    background-color: rgba(22, 27, 34, 0.9);
+    border: 1px solid #30363d;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+    cursor: default;
   }
 
   .glass-card-hover:hover {
-    transform: translateY(-4px);
-    border-color: rgba(0, 180, 216, 0.5);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 180, 216, 0.15), inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-
-  .neon-text {
-    color: #00b4d8;
-    text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,158,11,0.2);
   }
 
   .input-field {
     width: 100%;
-    background-color: #1a1a24;
-    border: 1px solid rgba(255,255,255,0.1);
+    background-color: #1f2937;
+    border: 1px solid #30363d;
     border-radius: 0.5rem;
     padding: 0.625rem 1rem;
-    color: #f0f4f8;
-    transition: all 0.2s;
+    color: #f0f6fc;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-
   .input-field::placeholder { color: #4a5568; }
-
   .input-field:focus {
     outline: none;
-    border-color: rgba(0, 180, 216, 0.6);
-    box-shadow: 0 0 0 1px rgba(0, 180, 216, 0.3);
+    border-color: rgba(245,158,11,0.6);
+    box-shadow: 0 0 0 2px rgba(245,158,11,0.15);
   }
 
   .btn-primary {
-    background-color: rgba(0, 180, 216, 0.15);
-    border: 1px solid rgba(0, 180, 216, 0.5);
-    color: #00b4d8;
+    background-color: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.4);
+    color: #f59e0b;
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, box-shadow 0.2s;
   }
-
   .btn-primary:hover {
-    background-color: rgba(0, 180, 216, 0.25);
-    box-shadow: 0 0 15px rgba(0, 180, 216, 0.3);
+    background-color: rgba(245,158,11,0.2);
+    box-shadow: 0 0 12px rgba(245,158,11,0.2);
   }
-
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-danger {
-    background-color: rgba(255, 77, 109, 0.1);
-    border: 1px solid rgba(255, 77, 109, 0.3);
-    color: #ff4d6d;
+    background-color: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #ef4444;
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s;
   }
+  .btn-danger:hover { background-color: rgba(239,68,68,0.2); }
 
-  .btn-danger:hover {
-    background-color: rgba(255, 77, 109, 0.2);
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 }
