@@ -17,8 +17,9 @@ function getGaugeColor(pct: number): string {
 }
 
 export function MiniGauge({ label, current, target, loading = false }: MiniGaugeProps) {
+  const RADIUS = 50
+  const arcLength = Math.PI * RADIUS
   const pct = target > 0 ? Math.min((current / target) * 100, 100) : 0
-  const arcLength = 157.08  // π × 50
   const offset = arcLength - (arcLength * pct) / 100
   const color = getGaugeColor(pct)
 
@@ -35,7 +36,12 @@ export function MiniGauge({ label, current, target, loading = false }: MiniGauge
       <div style={{ fontSize: '0.7rem', color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
         {label}
       </div>
-      <svg viewBox="0 0 120 70" style={{ width: 140, height: 82, overflow: 'visible' }}>
+      <svg
+        viewBox="0 0 120 70"
+        style={{ width: 140, height: 82, overflow: 'visible' }}
+        role="img"
+        aria-label={`${label}: ${pct.toFixed(0)}% — ${formatCurrency(current)} de ${formatCurrency(target)}`}
+      >
         {/* Track */}
         <path
           d="M 10 60 A 50 50 0 0 1 110 60"
