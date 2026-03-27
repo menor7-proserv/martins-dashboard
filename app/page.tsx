@@ -12,6 +12,22 @@ import { ExportButton } from '@/components/ui/ExportButton'
 import { formatCurrency } from '@/lib/formatters'
 import { TrendingDown, TrendingUp } from 'lucide-react'
 
+interface ContaAReceber {
+  prazo: string
+  _sum: { valor: number | null }
+}
+
+interface DashboardData {
+  faturamento: number
+  despesas: number
+  lucro: number
+  margem: number
+  contasAReceber: ContaAReceber[]
+  historico: { mes: number; ano: number; faturamento: number; despesas: number }[]
+  despesasPorCategoria: { categoria: string; _sum: { valor: number | null } }[]
+  meta?: { metaFaturamento: number; metaLucro: number } | null
+}
+
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 const PRAZO_ORDER = ['AVISTA', '7D', '30D', '60D', '90D']
 
@@ -28,20 +44,20 @@ export default function DashboardPage() {
   const now = new Date()
   const [mes, setMes] = useState(now.getMonth() + 1)
   const [ano, setAno] = useState(now.getFullYear())
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<DashboardData | null>(null)
   const [error, setError] = useState(false)
 
   useEffect(() => {
     setData(null)
     setError(false)
     fetch(`/api/dashboard?mes=${mes}&ano=${ano}`)
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('bad response'); return r.json() })
       .then(setData)
       .catch(() => setError(true))
   }, [mes, ano])
 
   const loading = !data && !error
-  const totalReceber = data?.contasAReceber.reduce((s: number, c: any) => s + (c._sum.valor ?? 0), 0) ?? 0
+  const totalReceber = data?.contasAReceber.reduce((s: number, c) => s + (c._sum.valor ?? 0), 0) ?? 0
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -166,7 +182,7 @@ export default function DashboardPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {PRAZO_ORDER.map(prazo => {
-              const entry = data?.contasAReceber.find((c: any) => c.prazo === prazo)
+              const entry = data?.contasAReceber.find(c => c.prazo === prazo)
               const valor = entry?._sum?.valor ?? 0
               const pct = totalReceber > 0 ? (valor / totalReceber) * 100 : 0
               return (
