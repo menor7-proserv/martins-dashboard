@@ -1,5 +1,3 @@
-'use client'
-
 const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
   // Status
   ABERTA:    { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.4)',  text: '#f59e0b' },
