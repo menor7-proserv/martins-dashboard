@@ -47,7 +47,7 @@ export function ExpensePieChart({ data }: { data: { categoria: string; _sum: { v
         <svg viewBox="0 0 80 80" style={{ width: 60, height: 60 }}>
           <circle cx="40" cy="40" r="30" fill="none" stroke="#30363d" strokeWidth="10" />
         </svg>
-        <span style={{ color: '#4a5568', fontSize: '0.8rem' }}>Sem despesas no período</span>
+        <span style={{ color: '#8b949e', fontSize: '0.8rem' }}>Sem despesas no período</span>
       </div>
     )
   }
@@ -72,7 +72,7 @@ export function ExpensePieChart({ data }: { data: { categoria: string; _sum: { v
               labelLine={false}
               shape={(props: any) => {
                 const { isActive, outerRadius, ...rest } = props
-                return <Sector {...props} outerRadius={isActive ? 88 : (outerRadius ?? 80)} />
+                return <Sector {...rest} outerRadius={isActive ? 88 : (outerRadius ?? 80)} />
               }}
             >
               {chartData.map((entry) => (
