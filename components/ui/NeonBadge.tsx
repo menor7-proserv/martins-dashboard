@@ -1,39 +1,46 @@
-interface NeonBadgeProps {
-  label: string
-  variant?: 'blue' | 'purple' | 'orange' | 'gold' | 'green' | 'red' | 'gray'
+'use client'
+
+const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
+  // Status
+  ABERTA:    { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.4)',  text: '#f59e0b' },
+  FECHADA:   { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.4)',  text: '#10b981' },
+  RECEBIDO:  { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.4)',  text: '#10b981' },
+  PAGO:      { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.4)',  text: '#10b981' },
+  PENDENTE:  { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.4)',  text: '#f59e0b' },
+  VENCIDO:   { bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)',   text: '#ef4444' },
+  CANCELADO: { bg: 'rgba(139,92,246,0.12)',  border: 'rgba(139,92,246,0.4)',  text: '#8b5cf6' },
+  // Prazos
+  AVISTA:    { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.4)',  text: '#10b981' },
+  '7D':      { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.4)',  text: '#f59e0b' },
+  '30D':     { bg: 'rgba(245,158,11,0.15)',  border: 'rgba(245,158,11,0.5)',  text: '#fbbf24' },
+  '60D':     { bg: 'rgba(251,146,60,0.12)',  border: 'rgba(251,146,60,0.4)',  text: '#fb923c' },
+  '90D':     { bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)',   text: '#ef4444' },
+  // Categorias
+  MATERIAL:    { bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.4)', text: '#f59e0b' },
+  MAO_DE_OBRA: { bg: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.4)', text: '#8b5cf6' },
+  TRANSPORTE:  { bg: 'rgba(251,146,60,0.12)', border: 'rgba(251,146,60,0.4)', text: '#fb923c' },
+  IMPOSTOS:    { bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.4)',  text: '#ef4444' },
 }
 
-const variants = {
-  blue:   'bg-neon-blue/10 text-neon-blue border-neon-blue/30',
-  purple: 'bg-accent-purple/10 text-accent-purple border-accent-purple/30',
-  orange: 'bg-accent-orange/10 text-accent-orange border-accent-orange/30',
-  gold:   'bg-accent-gold/10 text-accent-gold border-accent-gold/30',
-  green:  'bg-accent-green/10 text-accent-green border-accent-green/30',
-  red:    'bg-accent-red/10 text-accent-red border-accent-red/30',
-  gray:   'bg-white/5 text-text-muted border-white/10',
-}
+const DEFAULT = { bg: 'rgba(139,148,158,0.12)', border: 'rgba(139,148,158,0.3)', text: '#8b949e' }
 
-const categoryVariant: Record<string, NeonBadgeProps['variant']> = {
-  MATERIAL: 'blue',
-  MAO_DE_OBRA: 'purple',
-  TRANSPORTE: 'orange',
-  IMPOSTOS: 'gold',
-  AVISTA: 'green',
-  '7D': 'green',
-  '30D': 'blue',
-  '60D': 'purple',
-  '90D': 'gold',
-  PENDENTE: 'orange',
-  RECEBIDO: 'green',
-  ABERTA: 'blue',
-  CONCLUIDA: 'green',
-  CANCELADA: 'red',
-}
-
-export function NeonBadge({ label, variant }: NeonBadgeProps) {
-  const v = variant ?? categoryVariant[label] ?? 'gray'
+export function NeonBadge({ label }: { label: string }) {
+  const style = COLOR_MAP[label] ?? DEFAULT
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${variants[v]}`}>
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '0.125rem 0.5rem',
+      borderRadius: 9999,
+      fontSize: '0.65rem',
+      fontWeight: 600,
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.05em',
+      background: style.bg,
+      border: `1px solid ${style.border}`,
+      color: style.text,
+      whiteSpace: 'nowrap' as const,
+    }}>
       {label.replace(/_/g, ' ')}
     </span>
   )

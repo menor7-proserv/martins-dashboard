@@ -63,10 +63,10 @@ export default function DashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Faturamento" value={data.faturamento} color="blue" icon="💰" />
-        <KpiCard label="Despesas" value={data.despesas} color="red" icon="📉" />
-        <KpiCard label="Lucro Líquido" value={data.lucro} color={data.lucro >= 0 ? 'green' : 'red'} icon="✅" />
-        <KpiCard label="Margem" value={data.margem} format="percent" color="gold" icon="📊" />
+        <KpiCard label="Faturamento" value={data.faturamento} accentColor="#3b82f6" icon="💰" />
+        <KpiCard label="Despesas" value={data.despesas} accentColor="#ef4444" icon="📉" />
+        <KpiCard label="Lucro Líquido" value={data.lucro} accentColor={data.lucro >= 0 ? '#10b981' : '#ef4444'} icon="✅" />
+        <KpiCard label="Margem" value={data.margem} format="percent" accentColor="#f59e0b" icon="📊" />
       </div>
 
       {/* Contas a Receber + Metas */}

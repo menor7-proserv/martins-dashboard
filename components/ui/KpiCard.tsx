@@ -1,28 +1,22 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { formatCurrency, formatPercent } from '@/lib/formatters'
 
 interface KpiCardProps {
   label: string
   value: number
   format?: 'currency' | 'percent' | 'number'
-  color?: 'blue' | 'green' | 'red' | 'gold' | 'purple'
-  icon?: string
-  subtitle?: string
+  accentColor?: string
+  icon?: ReactNode
   trend?: number
+  loading?: boolean
 }
 
-const colorMap = {
-  blue:   { border: 'border-neon-blue/40',    text: 'text-neon-blue',    glow: 'shadow-[0_0_20px_rgba(0,180,216,0.2)]' },
-  green:  { border: 'border-accent-green/40', text: 'text-accent-green', glow: 'shadow-[0_0_20px_rgba(0,245,160,0.2)]' },
-  red:    { border: 'border-accent-red/40',   text: 'text-accent-red',   glow: 'shadow-[0_0_20px_rgba(255,77,109,0.2)]' },
-  gold:   { border: 'border-accent-gold/40',  text: 'text-accent-gold',  glow: 'shadow-[0_0_20px_rgba(255,214,10,0.2)]' },
-  purple: { border: 'border-accent-purple/40',text: 'text-accent-purple',glow: 'shadow-[0_0_20px_rgba(181,107,255,0.2)]' },
-}
-
-function useCountUp(target: number, duration = 1200) {
+function useCountUp(target: number, duration = 600) {
   const [current, setCurrent] = useState(0)
   useEffect(() => {
     const start = performance.now()
@@ -40,31 +34,48 @@ function useCountUp(target: number, duration = 1200) {
   return current
 }
 
-export function KpiCard({ label, value, format = 'currency', color = 'blue', icon, subtitle, trend }: KpiCardProps) {
+export function KpiCard({
+  label, value, format = 'currency',
+  accentColor = '#3b82f6', icon, trend, loading = false,
+}: KpiCardProps) {
   const animated = useCountUp(value)
-  const colors = colorMap[color]
 
   const display =
     format === 'currency' ? formatCurrency(animated) :
-    format === 'percent'  ? formatPercent(animated) :
+    format === 'percent'  ? formatPercent(animated)  :
     Math.round(animated).toLocaleString('pt-BR')
+
+  if (loading) {
+    return (
+      <div className="glass-card p-5 animate-pulse" style={{ borderTop: `2px solid ${accentColor}` }}>
+        <div style={{ height: 10, background: '#30363d', borderRadius: 4, width: '60%', marginBottom: 12 }} />
+        <div style={{ height: 28, background: '#30363d', borderRadius: 4, width: '80%', marginBottom: 8 }} />
+        <div style={{ height: 8, background: '#30363d', borderRadius: 4, width: '40%' }} />
+      </div>
+    )
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={`glass-card-hover p-5 ${colors.border} ${colors.glow} animate-neon-pulse`}
+      className="glass-card-hover p-5"
+      style={{ borderTop: `2px solid ${accentColor}` }}
     >
       <div className="flex items-start justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">{label}</span>
-        {icon && <span className="text-lg">{icon}</span>}
+        <span style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8b949e' }}>
+          {label}
+        </span>
+        {icon && <span style={{ color: accentColor, opacity: 0.7 }}>{icon}</span>}
       </div>
-      <div className={`text-2xl font-bold ${colors.text} mb-1`}>{display}</div>
-      {subtitle && <div className="text-xs text-text-dim">{subtitle}</div>}
+      <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f6fc', lineHeight: 1.2, marginBottom: 4 }}>
+        {display}
+      </div>
       {trend !== undefined && (
-        <div className={`text-xs mt-2 ${trend >= 0 ? 'text-accent-green' : 'text-accent-red'}`}>
-          {trend >= 0 ? '▲' : '▼'} {Math.abs(trend).toFixed(1)}% vs mês anterior
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: trend > 0 ? '#10b981' : trend < 0 ? '#ef4444' : '#8b949e' }}>
+          {trend > 0 ? <TrendingUp size={12} /> : trend < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
+          {Math.abs(trend).toFixed(1)}% vs mês anterior
         </div>
       )}
     </motion.div>
