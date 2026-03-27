@@ -1,73 +1,194 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import {
+  LayoutDashboard, Users, Receipt, CreditCard,
+  TrendingUp, Target, Menu, X
+} from 'lucide-react'
 
 const nav = [
-  { href: '/',         label: 'Dashboard', icon: '📊' },
-  { href: '/dre',      label: 'DRE',       icon: '📈' },
-  { href: '/clientes', label: 'Clientes',  icon: '👷' },
-  { href: '/despesas', label: 'Despesas',  icon: '💸' },
-  { href: '/receber',  label: 'A Receber', icon: '📋' },
-  { href: '/metas',    label: 'Metas',     icon: '🎯' },
+  { href: '/',         label: 'Dashboard',  Icon: LayoutDashboard },
+  { href: '/clientes', label: 'Clientes',   Icon: Users },
+  { href: '/despesas', label: 'Despesas',   Icon: Receipt },
+  { href: '/receber',  label: 'A Receber',  Icon: CreditCard },
+  { href: '/dre',      label: 'DRE',        Icon: TrendingUp },
+  { href: '/metas',    label: 'Metas',      Icon: Target },
 ]
+
+function NavItems({ pathname, onClose }: { pathname: string; onClose?: () => void }) {
+  return (
+    <>
+      {nav.map(({ href, label, Icon }) => {
+        const active = pathname === href
+        return (
+          <Link
+            key={href}
+            href={href}
+            onClick={onClose}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 group relative"
+            style={active ? {
+              background: 'rgba(245,158,11,0.12)',
+              borderLeft: '3px solid #f59e0b',
+              color: '#f59e0b',
+              paddingLeft: '0.625rem',
+            } : {
+              color: '#8b949e',
+              borderLeft: '3px solid transparent',
+              paddingLeft: '0.625rem',
+            }}
+            onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+            onMouseLeave={e => { if (!active) e.currentTarget.style.background = '' }}
+          >
+            <Icon
+              size={18}
+              style={{ flexShrink: 0, color: active ? '#f59e0b' : '#8b949e' }}
+            />
+            <span
+              className="sidebar-label whitespace-nowrap overflow-hidden"
+              style={{ color: active ? '#f59e0b' : '#8b949e' }}
+            >
+              {label}
+            </span>
+          </Link>
+        )
+      })}
+    </>
+  )
+}
 
 export function ShellLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [open, setOpen] = useState(true)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  // Close drawer on outside click
+  useEffect(() => {
+    if (!mobileOpen) return
+    const handler = (e: MouseEvent) => {
+      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
+        setMobileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [mobileOpen])
 
   return (
     <>
-      {/* Sidebar */}
-      <aside
-        className="fixed left-0 top-0 h-screen w-56 bg-bg-card border-r border-neon-blue/10 flex flex-col z-50 transition-transform duration-300"
-        style={{ transform: open ? 'translateX(0)' : 'translateX(-100%)' }}
-      >
-        <div className="p-5 border-b border-neon-blue/10">
-          <div className="text-xs text-text-muted uppercase tracking-widest mb-1">Martins Pro Serv</div>
-          <div className="neon-text font-bold text-lg leading-tight">Financeiro</div>
+      <style>{`
+        .sidebar-desktop {
+          position: fixed;
+          left: 0; top: 0;
+          height: 100vh;
+          width: 52px;
+          background: #161b22;
+          border-right: 1px solid #30363d;
+          display: flex;
+          flex-direction: column;
+          z-index: 50;
+          overflow: hidden;
+          transition: width 220ms ease-out;
+        }
+        .sidebar-desktop:hover {
+          width: 220px;
+        }
+        .sidebar-desktop:hover .sidebar-label {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        .sidebar-label {
+          opacity: 0;
+          transform: translateX(-8px);
+          transition: opacity 180ms ease-out, transform 180ms ease-out;
+        }
+        @media (max-width: 767px) {
+          .sidebar-desktop { display: none; }
+          .main-content    { margin-left: 0 !important; }
+        }
+        @media (max-width: 767px) {
+          .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; }
+        }
+      `}</style>
+
+      {/* Sidebar desktop */}
+      <aside className="sidebar-desktop">
+        {/* Logo */}
+        <div style={{ padding: '12px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #30363d', flexShrink: 0, height: 56 }}>
+          <div style={{
+            width: 32, height: 32, background: '#f59e0b', borderRadius: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 900, fontSize: 14, color: '#0d1117', flexShrink: 0,
+          }}>M</div>
+          <span className="sidebar-label" style={{ marginLeft: 10, fontSize: 13, fontWeight: 700, color: '#f0f6fc' }}>
+            Martins Pro Serv
+          </span>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
-          {nav.map(({ href, label, icon }) => {
-            const active = pathname === href
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-                  ${active
-                    ? 'bg-neon-blue/15 text-neon-blue border border-neon-blue/30 shadow-[0_0_10px_rgba(0,180,216,0.1)]'
-                    : 'text-text-muted hover:text-text-primary hover:bg-white/5'
-                  }`}
-              >
-                <span>{icon}</span>
-                <span>{label}</span>
-              </Link>
-            )
-          })}
+
+        {/* Nav items */}
+        <nav style={{ flex: 1, padding: '8px 6px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <NavItems pathname={pathname} />
         </nav>
-        <div className="p-3 border-t border-neon-blue/10 text-xs text-text-dim text-center">
-          v1.0 · SQLite Local
+
+        {/* Footer */}
+        <div style={{ padding: '8px 6px', borderTop: '1px solid #30363d', flexShrink: 0 }}>
+          <div style={{ fontSize: 10, color: '#4a5568', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <span className="sidebar-label" style={{ opacity: 0 }}>v1.0 · SQLite Local</span>
+          </div>
         </div>
       </aside>
 
-      {/* Toggle button — always visible */}
+      {/* Mobile hamburger */}
       <button
-        onClick={() => setOpen(v => !v)}
-        title={open ? 'Recolher menu' : 'Abrir menu'}
-        className="fixed top-4 z-[60] flex items-center justify-center w-8 h-8 rounded-lg text-neon-blue border border-neon-blue/40 bg-bg-card/90 backdrop-blur hover:border-neon-blue hover:shadow-[0_0_12px_rgba(0,180,216,0.35)] transition-all duration-300"
-        style={{ left: open ? '13.5rem' : '0.75rem' }}
+        onClick={() => setMobileOpen(true)}
+        style={{
+          display: 'none',
+          position: 'fixed', top: 12, left: 12, zIndex: 60,
+          background: '#161b22', border: '1px solid #30363d',
+          borderRadius: 8, padding: 6, cursor: 'pointer',
+          color: '#f59e0b',
+        }}
+        className="mobile-menu-btn"
+        aria-label="Abrir menu"
       >
-        <span className="text-base leading-none select-none">
-          {open ? '‹' : '›'}
-        </span>
+        <Menu size={20} />
       </button>
+
+      {/* Mobile drawer overlay */}
+      {mobileOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 70,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+        }}>
+          <div
+            ref={overlayRef}
+            style={{
+              position: 'absolute', left: 0, top: 0, height: '100vh',
+              width: 220, background: '#161b22', borderRight: '1px solid #30363d',
+              display: 'flex', flexDirection: 'column',
+            }}
+          >
+            <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #30363d' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 32, height: 32, background: '#f59e0b', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14, color: '#0d1117' }}>M</div>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#f0f6fc' }}>Martins Pro Serv</span>
+              </div>
+              <button onClick={() => setMobileOpen(false)} style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <nav style={{ flex: 1, padding: '8px 6px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <NavItems pathname={pathname} onClose={() => setMobileOpen(false)} />
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Main content */}
       <main
-        className="min-h-screen p-6 transition-all duration-300"
-        style={{ marginLeft: open ? '14rem' : '0' }}
+        className="main-content min-h-screen p-6"
+        style={{ marginLeft: 52 }}
       >
         {children}
       </main>
