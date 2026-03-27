@@ -1,5 +1,6 @@
 'use client'
 
+import { useId } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer
@@ -7,7 +8,7 @@ import {
 
 interface DataPoint {
   mes: number; ano: number
-  faturamento: number; despesas: number; lucro: number
+  faturamento: number; despesas: number
 }
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -30,9 +31,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export function RevenueChart({ data }: { data: DataPoint[] }) {
+  const uid = useId().replace(/:/g, '-')
+  const gradFatId = `gradFat-${uid}`
+  const gradDespId = `gradDesp-${uid}`
+
   if (!data || data.length === 0) {
     return (
-      <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a5568', fontSize: '0.875rem' }}>
+      <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b949e', fontSize: '0.875rem' }}>
         Sem dados históricos
       </div>
     )
@@ -48,11 +53,11 @@ export function RevenueChart({ data }: { data: DataPoint[] }) {
     <ResponsiveContainer width="100%" height={220}>
       <AreaChart data={chartData} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
         <defs>
-          <linearGradient id="gradFat" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradFatId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%"  stopColor="#f59e0b" stopOpacity={0.4} />
             <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.02} />
           </linearGradient>
-          <linearGradient id="gradDesp" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradDespId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.2} />
             <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02} />
           </linearGradient>
@@ -65,7 +70,7 @@ export function RevenueChart({ data }: { data: DataPoint[] }) {
         <Area
           type="monotone" dataKey="Faturamento"
           stroke="#f59e0b" strokeWidth={2}
-          fill="url(#gradFat)"
+          fill={`url(#${gradFatId})`}
           dot={false}
           activeDot={{ r: 4, fill: '#f59e0b' }}
           animationDuration={1200}
@@ -74,7 +79,7 @@ export function RevenueChart({ data }: { data: DataPoint[] }) {
           type="monotone" dataKey="Despesas"
           stroke="#8b5cf6" strokeWidth={1.5}
           strokeDasharray="4 2"
-          fill="url(#gradDesp)"
+          fill={`url(#${gradDespId})`}
           dot={false}
           activeDot={{ r: 3, fill: '#8b5cf6' }}
           animationDuration={1200}

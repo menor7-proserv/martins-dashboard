@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Sector } from 'recharts'
 import { formatCurrency } from '@/lib/formatters'
 
@@ -18,9 +17,22 @@ const CustomTooltip = ({ active, payload }: any) => {
   )
 }
 
-export function ExpensePieChart({ data }: { data: { categoria: string; _sum: { valor: number | null } }[] }) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+function CenterLabel({ viewBox, total }: { viewBox?: { cx: number; cy: number }; total: number }) {
+  if (!viewBox) return null
+  const { cx, cy } = viewBox
+  return (
+    <>
+      <text x={cx} y={cy - 6} textAnchor="middle" fill="#f0f6fc" fontSize="12" fontWeight="700">
+        Total
+      </text>
+      <text x={cx} y={cy + 10} textAnchor="middle" fill="#f59e0b" fontSize="11" fontWeight="800">
+        {(total / 1000).toFixed(1)}K
+      </text>
+    </>
+  )
+}
 
+export function ExpensePieChart({ data }: { data: { categoria: string; _sum: { valor: number | null } }[] }) {
   const chartData = data
     .map((d, i) => ({
       name: d.categoria.replace(/_/g, ' '),
@@ -42,53 +54,38 @@ export function ExpensePieChart({ data }: { data: { categoria: string; _sum: { v
 
   const total = chartData.reduce((s, d) => s + d.value, 0)
 
-  const CenterLabel = ({ viewBox }: any) => {
-    if (!viewBox) return null
-    const { cx, cy } = viewBox
-    return (
-      <>
-        <text x={cx} y={cy - 6} textAnchor="middle" fill="#f0f6fc" fontSize="12" fontWeight="700">
-          Total
-        </text>
-        <text x={cx} y={cy + 10} textAnchor="middle" fill="#f59e0b" fontSize="11" fontWeight="800">
-          {(total / 1000).toFixed(1)}K
-        </text>
-      </>
-    )
-  }
-
-  const renderActiveShape = (props: any) => <Sector {...props} outerRadius={88} />
-
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-      <ResponsiveContainer width={160} height={160}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%" cy="50%"
-            innerRadius={55}
-            outerRadius={80}
-            paddingAngle={3}
-            dataKey="value"
-            animationBegin={0}
-            animationDuration={800}
-            onMouseEnter={(_: any, index: number) => setActiveIndex(index)}
-            onMouseLeave={() => setActiveIndex(null)}
-            label={<CenterLabel />}
-            labelLine={false}
-            activeIndex={activeIndex ?? undefined}
-            activeShape={renderActiveShape}
-          >
-            {chartData.map((entry) => (
-              <Cell
-                key={entry.name}
-                fill={entry.fill}
-              />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
-      </ResponsiveContainer>
+      <div style={{ width: 160, height: 160, flexShrink: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx="50%" cy="50%"
+              innerRadius={55}
+              outerRadius={80}
+              paddingAngle={3}
+              dataKey="value"
+              animationBegin={0}
+              animationDuration={800}
+              label={(props: any) => <CenterLabel {...props} total={total} />}
+              labelLine={false}
+              shape={(props: any) => {
+                const { isActive, outerRadius, ...rest } = props
+                return <Sector {...props} outerRadius={isActive ? 88 : (outerRadius ?? 80)} />
+              }}
+            >
+              {chartData.map((entry) => (
+                <Cell
+                  key={entry.name}
+                  fill={entry.fill}
+                />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Legenda lateral */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
