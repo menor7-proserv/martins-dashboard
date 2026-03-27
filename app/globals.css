@@ -146,14 +146,14 @@ body {
   .sidebar-desktop:hover {
     width: 220px;
   }
-  .sidebar-desktop:hover .sidebar-label {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .sidebar-label {
+  .sidebar-desktop .sidebar-label {
     opacity: 0;
     transform: translateX(-8px);
     transition: opacity 180ms ease-out, transform 180ms ease-out;
+  }
+  .sidebar-desktop:hover .sidebar-label {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   /* ── Nav link hover (CSS-driven, no DOM mutation) ── */
