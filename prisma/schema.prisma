@@ -6,11 +6,26 @@ datasource db {
   provider = "sqlite"
 }
 
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String?
+  nome      String
+  empresa   String
+  createdAt DateTime  @default(now())
+
+  clientes  Cliente[]
+  despesas  Despesa[]
+  metas     Meta[]
+}
+
 model Cliente {
   id        Int      @id @default(autoincrement())
+  userId    String
   nome      String
   telefone  String?
   obras     Obra[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   criadoEm DateTime @default(now())
 }
 
@@ -39,18 +54,22 @@ model Pagamento {
 
 model Despesa {
   id        Int      @id @default(autoincrement())
+  userId    String
   categoria String
   descricao String
   valor     Float
   data      DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   criadoEm DateTime @default(now())
 }
 
 model Meta {
-  id               Int   @id @default(autoincrement())
+  id               Int    @id @default(autoincrement())
+  userId           String
   mes              Int
   ano              Int
   metaFaturamento  Float
   metaLucro        Float
-  @@unique([mes, ano])
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([mes, ano, userId])
 }

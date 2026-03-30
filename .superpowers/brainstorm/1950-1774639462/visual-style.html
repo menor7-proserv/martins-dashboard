@@ -1,0 +1,149 @@
+<h2>Qual direção visual combina mais com sua visão?</h2>
+<p class="subtitle">Todos mantêm dark mode + animações. A diferença está na personalidade e hierarquia dos elementos.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="enterprise-clean" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;border-radius:8px;padding:16px;min-height:200px;">
+      <!-- Header bar -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#2563eb;"></div>
+        <div style="font-size:10px;color:#94a3b8;font-weight:600;letter-spacing:2px;text-transform:uppercase;">MARTINS PRO SERV</div>
+        <div style="margin-left:auto;display:flex;gap:6px;">
+          <div style="width:48px;height:6px;background:#1e293b;border-radius:3px;"></div>
+          <div style="width:48px;height:6px;background:#1e293b;border-radius:3px;"></div>
+        </div>
+      </div>
+      <!-- KPI row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+        <div style="background:#1e293b;border-radius:6px;padding:10px;border-left:3px solid #2563eb;">
+          <div style="font-size:8px;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Faturamento</div>
+          <div style="font-size:14px;color:#f1f5f9;font-weight:700;">R$ 48.200</div>
+          <div style="font-size:8px;color:#22c55e;margin-top:2px;">↑ 12,4%</div>
+        </div>
+        <div style="background:#1e293b;border-radius:6px;padding:10px;border-left:3px solid #7c3aed;">
+          <div style="font-size:8px;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Lucro</div>
+          <div style="font-size:14px;color:#f1f5f9;font-weight:700;">R$ 18.900</div>
+          <div style="font-size:8px;color:#22c55e;margin-top:2px;">↑ 8,1%</div>
+        </div>
+        <div style="background:#1e293b;border-radius:6px;padding:10px;border-left:3px solid #0891b2;">
+          <div style="font-size:8px;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Margem</div>
+          <div style="font-size:14px;color:#f1f5f9;font-weight:700;">39,2%</div>
+          <div style="font-size:8px;color:#facc15;margin-top:2px;">→ estável</div>
+        </div>
+      </div>
+      <!-- Chart placeholder -->
+      <div style="background:#1e293b;border-radius:6px;padding:10px;display:flex;align-items:flex-end;gap:4px;height:56px;">
+        <div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:40%;opacity:0.7;"></div>
+        <div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:60%;opacity:0.85;"></div>
+        <div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:45%;opacity:0.7;"></div>
+        <div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:80%;opacity:0.9;"></div>
+        <div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:55%;opacity:0.7;"></div>
+        <div style="flex:1;background:#2563eb;border-radius:2px 2px 0 0;height:100%;"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Enterprise Clean</h3>
+      <p>Cards sólidos com accent bars coloridas, tipografia nítida, hierarquia clara. Estilo TOTVS / SAP Analytics. Transmite solidez e credibilidade profissional.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="glassmorphism-pro" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(135deg,#0a0a1a 0%,#0d1a2e 100%);border-radius:8px;padding:16px;min-height:200px;position:relative;overflow:hidden;">
+      <!-- Glow orbs -->
+      <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(59,130,246,0.3),transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:10px;left:-10px;width:60px;height:60px;background:radial-gradient(circle,rgba(139,92,246,0.2),transparent 70%);pointer-events:none;"></div>
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <div style="width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;font-weight:700;">M</div>
+        <div style="font-size:11px;color:#e2e8f0;font-weight:700;">Martins Pro Serv</div>
+      </div>
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">
+        <div style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);backdrop-filter:blur(8px);border-radius:8px;padding:8px;">
+          <div style="font-size:7px;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">FATUR.</div>
+          <div style="font-size:13px;color:white;font-weight:700;">48.2K</div>
+        </div>
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);backdrop-filter:blur(8px);border-radius:8px;padding:8px;">
+          <div style="font-size:7px;color:#c4b5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">LUCRO</div>
+          <div style="font-size:13px;color:white;font-weight:700;">18.9K</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);backdrop-filter:blur(8px);border-radius:8px;padding:8px;">
+          <div style="font-size:7px;color:#6ee7b7;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">MARGEM</div>
+          <div style="font-size:13px;color:white;font-weight:700;">39%</div>
+        </div>
+      </div>
+      <!-- Gauge rows -->
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:8px;color:#94a3b8;margin-bottom:4px;"><span>Meta Faturamento</span><span style="color:#3b82f6;">78%</span></div>
+        <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+          <div style="width:78%;height:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);border-radius:2px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:8px;color:#94a3b8;margin-top:6px;margin-bottom:4px;"><span>Meta Lucro</span><span style="color:#10b981;">64%</span></div>
+        <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+          <div style="width:64%;height:100%;background:linear-gradient(90deg,#10b981,#3b82f6);border-radius:2px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Glassmorphism Pro</h3>
+      <p>Cards com blur e bordas suaves, gradientes vivos e glow ambiente. Estilo Omie / Conta Azul next-gen. Visual premium e moderno, impacto visual alto.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="dashboard-powerbi" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:200px;">
+      <!-- Topbar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #1f2937;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="width:20px;height:20px;background:#f59e0b;border-radius:4px;"></div>
+          <span style="font-size:10px;color:#f9fafb;font-weight:700;">MARTINS</span>
+          <span style="font-size:10px;color:#6b7280;">Dashboard</span>
+        </div>
+        <div style="background:#1f2937;border-radius:4px;padding:3px 8px;font-size:8px;color:#f59e0b;border:1px solid #f59e0b33;">Março 2026</div>
+      </div>
+      <!-- Big number cards -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px;">
+        <div style="background:#1f2937;border-radius:6px;padding:10px;border-top:2px solid #f59e0b;">
+          <div style="font-size:7px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Faturamento Mensal</div>
+          <div style="font-size:18px;color:#f9fafb;font-weight:800;margin-top:2px;">R$48.2K</div>
+          <div style="font-size:8px;color:#34d399;margin-top:2px;">● Meta: 82% atingida</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:10px;border-top:2px solid #8b5cf6;">
+          <div style="font-size:7px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Lucro Líquido</div>
+          <div style="font-size:18px;color:#f9fafb;font-weight:800;margin-top:2px;">R$18.9K</div>
+          <div style="font-size:8px;color:#34d399;margin-top:2px;">● Meta: 71% atingida</div>
+        </div>
+      </div>
+      <!-- Mini bar chart -->
+      <div style="background:#1f2937;border-radius:6px;padding:8px;">
+        <div style="font-size:7px;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Faturamento últimos 6 meses</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:40px;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="width:100%;background:#f59e0b;border-radius:2px 2px 0 0;height:52%;opacity:0.6;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="width:100%;background:#f59e0b;border-radius:2px 2px 0 0;height:68%;opacity:0.75;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="width:100%;background:#f59e0b;border-radius:2px 2px 0 0;height:58%;opacity:0.6;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="width:100%;background:#f59e0b;border-radius:2px 2px 0 0;height:85%;opacity:0.85;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="width:100%;background:#f59e0b;border-radius:2px 2px 0 0;height:72%;opacity:0.75;"></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="width:100%;background:#f59e0b;border-radius:2px 2px 0 0;height:100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Dashboard Power</h3>
+      <p>Números grandes e em destaque, accent amarelo/âmbar, cards densos. Estilo Power BI / Metabase. Foco em leitura rápida de indicadores — dados no centro.</p>
+    </div>
+  </div>
+
+</div>

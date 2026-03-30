@@ -1,0 +1,167 @@
+<h2>Estilo dos gráficos e elementos interativos?</h2>
+<p class="subtitle">Os gráficos tomam boa parte da tela — como devem se comportar visualmente?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="charts-gradient-area" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:210px;">
+      <div style="font-size:7px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Histórico 6 Meses</div>
+      <!-- Area chart simulado -->
+      <div style="position:relative;height:100px;background:#1f2937;border-radius:8px;padding:10px;overflow:hidden;">
+        <svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <!-- Area faturamento -->
+          <path d="M10,55 C30,50 50,35 70,38 C90,41 110,28 130,22 C150,16 170,20 190,10 L190,70 L10,70 Z" fill="url(#g1)"/>
+          <path d="M10,55 C30,50 50,35 70,38 C90,41 110,28 130,22 C150,16 170,20 190,10" stroke="#f59e0b" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Area despesas -->
+          <path d="M10,62 C30,58 50,50 70,52 C90,54 110,46 130,44 C150,42 170,44 190,38 L190,70 L10,70 Z" fill="url(#g2)"/>
+          <path d="M10,62 C30,58 50,50 70,52 C90,54 110,46 130,44 C150,42 170,44 190,38" stroke="#8b5cf6" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-dasharray="4,2"/>
+          <!-- Dots no último ponto -->
+          <circle cx="190" cy="10" r="3" fill="#f59e0b"/>
+          <circle cx="190" cy="38" r="2.5" fill="#8b5cf6"/>
+        </svg>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:3px;background:#f59e0b;border-radius:2px;"></div><span style="font-size:7px;color:#9ca3af;">Faturamento</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:2px;background:#8b5cf6;border-radius:2px;border-top:1px dashed #8b5cf6;"></div><span style="font-size:7px;color:#9ca3af;">Despesas</span></div>
+      </div>
+      <!-- Pie simulado -->
+      <div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+        <svg viewBox="0 0 40 40" style="width:40px;height:40px;">
+          <circle cx="20" cy="20" r="15" fill="none" stroke="#f59e0b" stroke-width="8" stroke-dasharray="47 95" stroke-dashoffset="0" transform="rotate(-90 20 20)"/>
+          <circle cx="20" cy="20" r="15" fill="none" stroke="#8b5cf6" stroke-width="8" stroke-dasharray="28 95" stroke-dashoffset="-47" transform="rotate(-90 20 20)"/>
+          <circle cx="20" cy="20" r="15" fill="none" stroke="#10b981" stroke-width="8" stroke-dasharray="20 95" stroke-dashoffset="-75" transform="rotate(-90 20 20)"/>
+        </svg>
+        <div style="font-size:7px;color:#9ca3af;line-height:1.6;">
+          <span style="color:#f59e0b;">■</span> Material 49%<br/>
+          <span style="color:#8b5cf6;">■</span> MO 29%<br/>
+          <span style="color:#10b981;">■</span> Overhead 22%
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Area Chart + Donut</h3>
+      <p>Linhas com área gradiente preenchida para histórico, donut chart para categorias. Visual suave e premium. Tooltip animado ao hover nos pontos.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="charts-bar-bold" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:210px;">
+      <div style="font-size:7px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Histórico 6 Meses</div>
+      <!-- Grouped bar chart simulado -->
+      <div style="background:#1f2937;border-radius:8px;padding:10px;height:100px;display:flex;align-items:flex-end;gap:6px;overflow:hidden;">
+        <!-- Grupos de barras -->
+        <div style="flex:1;display:flex;gap:1px;align-items:flex-end;">
+          <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:45%;"></div>
+          <div style="flex:1;background:#8b5cf6;border-radius:2px 2px 0 0;height:28%;"></div>
+        </div>
+        <div style="flex:1;display:flex;gap:1px;align-items:flex-end;">
+          <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:62%;"></div>
+          <div style="flex:1;background:#8b5cf6;border-radius:2px 2px 0 0;height:38%;"></div>
+        </div>
+        <div style="flex:1;display:flex;gap:1px;align-items:flex-end;">
+          <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:50%;"></div>
+          <div style="flex:1;background:#8b5cf6;border-radius:2px 2px 0 0;height:31%;"></div>
+        </div>
+        <div style="flex:1;display:flex;gap:1px;align-items:flex-end;">
+          <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:80%;"></div>
+          <div style="flex:1;background:#8b5cf6;border-radius:2px 2px 0 0;height:50%;"></div>
+        </div>
+        <div style="flex:1;display:flex;gap:1px;align-items:flex-end;">
+          <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:70%;"></div>
+          <div style="flex:1;background:#8b5cf6;border-radius:2px 2px 0 0;height:43%;"></div>
+        </div>
+        <div style="flex:1;display:flex;gap:1px;align-items:flex-end;">
+          <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:100%;position:relative;">
+            <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#f59e0b;color:#111;font-size:6px;padding:1px 3px;border-radius:2px;white-space:nowrap;">48.2K</div>
+          </div>
+          <div style="flex:1;background:#8b5cf6;border-radius:2px 2px 0 0;height:60%;"></div>
+        </div>
+      </div>
+      <!-- Labels -->
+      <div style="display:flex;gap:6px;margin-top:4px;">
+        <div style="flex:1;text-align:center;font-size:6px;color:#6b7280;">Out</div>
+        <div style="flex:1;text-align:center;font-size:6px;color:#6b7280;">Nov</div>
+        <div style="flex:1;text-align:center;font-size:6px;color:#6b7280;">Dez</div>
+        <div style="flex:1;text-align:center;font-size:6px;color:#6b7280;">Jan</div>
+        <div style="flex:1;text-align:center;font-size:6px;color:#6b7280;">Fev</div>
+        <div style="flex:1;text-align:center;font-size:6px;color:#9ca3af;font-weight:700;">Mar</div>
+      </div>
+      <!-- Horizontal bars categorias -->
+      <div style="margin-top:8px;background:#1f2937;border-radius:6px;padding:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:7px;color:#9ca3af;">Material</span>
+          <span style="font-size:7px;color:#f59e0b;font-weight:700;">R$14.3K</span>
+        </div>
+        <div style="height:5px;background:#374151;border-radius:3px;overflow:hidden;margin-bottom:4px;">
+          <div style="width:49%;height:100%;background:#f59e0b;border-radius:3px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:7px;color:#9ca3af;">Mão de Obra</span>
+          <span style="font-size:7px;color:#8b5cf6;font-weight:700;">R$8.5K</span>
+        </div>
+        <div style="height:5px;background:#374151;border-radius:3px;overflow:hidden;">
+          <div style="width:29%;height:100%;background:#8b5cf6;border-radius:3px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Bar Chart Agrupado + Horizontal</h3>
+      <p>Barras agrupadas Faturamento vs Despesas, tooltip com valor no hover. Barras horizontais para ranking de categorias. Estilo Power BI nativo — direto e impactante.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="charts-mixed" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:210px;">
+      <div style="font-size:7px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Histórico + Composição</div>
+      <!-- Line + Bar combo -->
+      <div style="background:#1f2937;border-radius:8px;padding:10px;height:95px;position:relative;overflow:hidden;">
+        <!-- Barras -->
+        <div style="display:flex;align-items:flex-end;gap:4px;height:100%;">
+          <div style="flex:1;background:rgba(245,158,11,0.25);border-radius:2px 2px 0 0;height:45%;"></div>
+          <div style="flex:1;background:rgba(245,158,11,0.35);border-radius:2px 2px 0 0;height:62%;"></div>
+          <div style="flex:1;background:rgba(245,158,11,0.3);border-radius:2px 2px 0 0;height:50%;"></div>
+          <div style="flex:1;background:rgba(245,158,11,0.5);border-radius:2px 2px 0 0;height:80%;"></div>
+          <div style="flex:1;background:rgba(245,158,11,0.45);border-radius:2px 2px 0 0;height:70%;"></div>
+          <div style="flex:1;background:rgba(245,158,11,0.7);border-radius:2px 2px 0 0;height:100%;"></div>
+        </div>
+        <!-- Linha de lucro por cima -->
+        <svg viewBox="0 0 200 75" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+          <path d="M18,58 C40,52 65,42 88,38 C112,34 135,26 158,20 C175,16 185,12 195,8" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="195" cy="8" r="3" fill="#10b981"/>
+          <text x="188" y="6" font-size="6" fill="#10b981">18.9K</text>
+        </svg>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:5px;">
+        <div style="display:flex;align-items:center;gap:3px;"><div style="width:10px;height:8px;background:rgba(245,158,11,0.5);border-radius:1px;"></div><span style="font-size:7px;color:#9ca3af;">Faturamento</span></div>
+        <div style="display:flex;align-items:center;gap:3px;"><div style="width:10px;height:2px;background:#10b981;"></div><span style="font-size:7px;color:#9ca3af;">Lucro</span></div>
+      </div>
+      <!-- Gauge de meta -->
+      <div style="background:#1f2937;border-radius:6px;padding:8px;margin-top:6px;display:flex;align-items:center;gap:10px;">
+        <svg viewBox="0 0 60 35" style="width:56px;height:35px;">
+          <path d="M5,30 A25,25 0 0,1 55,30" stroke="#374151" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M5,30 A25,25 0 0,1 55,30" stroke="#f59e0b" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="78.5 78.5" stroke-dashoffset="15.7"/>
+          <text x="30" y="28" text-anchor="middle" font-size="9" fill="#f9fafb" font-weight="bold">82%</text>
+        </svg>
+        <div>
+          <div style="font-size:7px;color:#9ca3af;">Meta Faturamento</div>
+          <div style="font-size:9px;color:#f59e0b;font-weight:700;">R$48.2K / R$58.7K</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Combo Chart + Gauge</h3>
+      <p>Barras de faturamento com linha de lucro sobreposta, gauge semicircular para meta. Visual mais sofisticado e analítico — parecido com dashboards de BI profissional.</p>
+    </div>
+  </div>
+
+</div>

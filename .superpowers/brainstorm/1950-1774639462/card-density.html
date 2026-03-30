@@ -1,0 +1,137 @@
+<h2>Tamanho e densidade dos KPI cards?</h2>
+<p class="subtitle">Você pediu "render máxima". Como prefere distribuir os indicadores no dashboard?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="big-4" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:210px;">
+      <div style="font-size:7px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Dashboard · Março 2026</div>
+      <!-- 4 KPI grandes -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;">
+        <div style="background:#1f2937;border-radius:8px;padding:14px;border-top:3px solid #f59e0b;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:8px;right:10px;font-size:20px;opacity:0.15;">💰</div>
+          <div style="font-size:7px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Faturamento</div>
+          <div style="font-size:22px;color:#f9fafb;font-weight:900;line-height:1;">R$48.200</div>
+          <div style="font-size:8px;color:#34d399;margin-top:4px;">↑ 12,4% vs mês anterior</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:14px;border-top:3px solid #8b5cf6;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:8px;right:10px;font-size:20px;opacity:0.15;">📉</div>
+          <div style="font-size:7px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Despesas</div>
+          <div style="font-size:22px;color:#f9fafb;font-weight:900;line-height:1;">R$29.300</div>
+          <div style="font-size:8px;color:#f87171;margin-top:4px;">↑ 3,2% vs mês anterior</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:14px;border-top:3px solid #10b981;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:8px;right:10px;font-size:20px;opacity:0.15;">✅</div>
+          <div style="font-size:7px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Lucro Líquido</div>
+          <div style="font-size:22px;color:#f9fafb;font-weight:900;line-height:1;">R$18.900</div>
+          <div style="font-size:8px;color:#34d399;margin-top:4px;">↑ 8,1% vs mês anterior</div>
+        </div>
+        <div style="background:#1f2937;border-radius:8px;padding:14px;border-top:3px solid #3b82f6;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:8px;right:10px;font-size:20px;opacity:0.15;">📊</div>
+          <div style="font-size:7px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Margem</div>
+          <div style="font-size:22px;color:#f9fafb;font-weight:900;line-height:1;">39,2%</div>
+          <div style="font-size:8px;color:#facc15;margin-top:4px;">→ estável</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>4 KPIs Grandes (2×2)</h3>
+      <p>Quatro cards grandes com números gigantes e variação percentual. Impacto visual máximo, leitura em 2 segundos. Resto da tela para gráficos.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="hero-row" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:210px;">
+      <div style="font-size:7px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Dashboard · Março 2026</div>
+      <!-- Hero card + row -->
+      <div style="background:linear-gradient(135deg,#1f2937,#111827);border:1px solid #374151;border-radius:8px;padding:14px;margin-bottom:8px;border-left:4px solid #f59e0b;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:8px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Faturamento do Mês</div>
+          <div style="font-size:30px;color:#f9fafb;font-weight:900;line-height:1.1;">R$ 48.200</div>
+          <div style="font-size:8px;color:#34d399;margin-top:3px;">● Meta atingida: 82% · ↑ 12,4%</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="height:4px;width:80px;background:#374151;border-radius:2px;overflow:hidden;margin-bottom:4px;">
+            <div style="width:82%;height:100%;background:#f59e0b;border-radius:2px;"></div>
+          </div>
+          <div style="font-size:20px;color:#f59e0b;font-weight:900;">82%</div>
+        </div>
+      </div>
+      <!-- 3 menores embaixo -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-bottom:2px solid #8b5cf6;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Despesas</div>
+          <div style="font-size:14px;color:#f9fafb;font-weight:800;">R$29.3K</div>
+          <div style="font-size:7px;color:#f87171;">↑ 3,2%</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-bottom:2px solid #10b981;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Lucro</div>
+          <div style="font-size:14px;color:#f9fafb;font-weight:800;">R$18.9K</div>
+          <div style="font-size:7px;color:#34d399;">↑ 8,1%</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-bottom:2px solid #3b82f6;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Margem</div>
+          <div style="font-size:14px;color:#f9fafb;font-weight:800;">39,2%</div>
+          <div style="font-size:7px;color:#facc15;">→ estável</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Hero + 3 Secundários</h3>
+      <p>Faturamento em destaque absoluto (card gigante), demais métricas menores embaixo. Hierarquia clara, dá foco ao número mais importante.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="wide-6" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827;border-radius:8px;padding:14px;min-height:210px;">
+      <div style="font-size:7px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Dashboard · Março 2026</div>
+      <!-- 6 KPIs em linha horizontal -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;">
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-left:3px solid #f59e0b;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Faturamento</div>
+          <div style="font-size:15px;color:#f9fafb;font-weight:800;">R$48.2K</div>
+          <div style="font-size:7px;color:#34d399;">↑ 12,4%</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-left:3px solid #ef4444;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Despesas</div>
+          <div style="font-size:15px;color:#f9fafb;font-weight:800;">R$29.3K</div>
+          <div style="font-size:7px;color:#f87171;">↑ 3,2%</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-left:3px solid #10b981;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Lucro</div>
+          <div style="font-size:15px;color:#f9fafb;font-weight:800;">R$18.9K</div>
+          <div style="font-size:7px;color:#34d399;">↑ 8,1%</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-left:3px solid #3b82f6;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Margem</div>
+          <div style="font-size:15px;color:#f9fafb;font-weight:800;">39,2%</div>
+          <div style="font-size:7px;color:#facc15;">→ est.</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-left:3px solid #8b5cf6;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">A Receber</div>
+          <div style="font-size:15px;color:#f9fafb;font-weight:800;">R$12.4K</div>
+          <div style="font-size:7px;color:#c4b5fd;">3 pendentes</div>
+        </div>
+        <div style="background:#1f2937;border-radius:6px;padding:8px;border-left:3px solid #06b6d4;">
+          <div style="font-size:6px;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;">Obras Abertas</div>
+          <div style="font-size:15px;color:#f9fafb;font-weight:800;">7</div>
+          <div style="font-size:7px;color:#67e8f9;">em andamento</div>
+        </div>
+      </div>
+      <!-- mini gráfico ocupando resto -->
+      <div style="background:#1f2937;border-radius:6px;padding:8px;height:54px;display:flex;align-items:flex-end;gap:3px;">
+        <div style="flex:1;background:#f59e0b33;border-radius:2px 2px 0 0;height:50%;"></div>
+        <div style="flex:1;background:#f59e0b55;border-radius:2px 2px 0 0;height:72%;"></div>
+        <div style="flex:1;background:#f59e0b44;border-radius:2px 2px 0 0;height:58%;"></div>
+        <div style="flex:1;background:#f59e0b88;border-radius:2px 2px 0 0;height:86%;"></div>
+        <div style="flex:1;background:#f59e0baa;border-radius:2px 2px 0 0;height:74%;"></div>
+        <div style="flex:1;background:#f59e0b;border-radius:2px 2px 0 0;height:100%;"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>6 KPIs (3×2) — Visão Completa</h3>
+      <p>Seis indicadores incluindo A Receber e Obras Abertas. Painel mais denso, visão 360° do negócio de uma só vez. Mais próximo de um ERP como TOTVS.</p>
+    </div>
+  </div>
+
+</div>

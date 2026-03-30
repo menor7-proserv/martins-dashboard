@@ -4,14 +4,20 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { DespesaForm } from '@/components/forms/DespesaForm'
 import { NeonBadge } from '@/components/ui/NeonBadge'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { ExpensePieChart } from '@/components/charts/ExpensePieChart'
 import { formatCurrency, formatDate } from '@/lib/formatters'
-import { Trash2 } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
+import { useConfirm } from '@/components/ui/ConfirmModal'
+import { Trash2, Receipt } from 'lucide-react'
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
 const CATEGORIAS = ['', 'MATERIAL', 'MAO_DE_OBRA', 'TRANSPORTE', 'IMPOSTOS']
 
 export default function DespesasPage() {
+  const { success, error: toastError } = useToast()
+  const confirm = useConfirm()
+
   const now = new Date()
   const [mes, setMes] = useState(now.getMonth() + 1)
   const [ano, setAno] = useState(now.getFullYear())
@@ -20,14 +26,28 @@ export default function DespesasPage() {
 
   const load = useCallback(async () => {
     const url = `/api/despesas?mes=${mes}&ano=${ano}${filtroCategoria ? `&categoria=${filtroCategoria}` : ''}`
-    setDespesas(await (await fetch(url)).json())
+    const res = await fetch(url)
+    if (res.ok) setDespesas(await res.json())
   }, [mes, ano, filtroCategoria])
 
   useEffect(() => { load() }, [load])
 
-  const deletar = async (id: number) => {
-    await fetch(`/api/despesas/${id}`, { method: 'DELETE' })
-    load()
+  const deletar = async (id: number, descricao: string) => {
+    const ok = await confirm({
+      title: 'Remover despesa?',
+      message: `"${descricao}" será excluída permanentemente.`,
+      confirmLabel: 'Remover',
+      danger: true,
+    })
+    if (!ok) return
+    try {
+      const res = await fetch(`/api/despesas/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      await load()
+      success('Despesa removida', 'Registro excluído com sucesso')
+    } catch {
+      toastError('Erro ao remover', 'Tente novamente')
+    }
   }
 
   const total = despesas.reduce((s, d) => s + d.valor, 0)
@@ -38,7 +58,7 @@ export default function DespesasPage() {
   const pieData = Object.entries(porCategoria).map(([categoria, valor]) => ({ categoria, _sum: { valor } }))
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f6fc' }}>Despesas</h1>
@@ -81,6 +101,13 @@ export default function DespesasPage() {
           </div>
 
           <div className="space-y-2">
+            {despesas.length === 0 && (
+              <EmptyState
+                icon={<Receipt size={22} />}
+                title="Nenhuma despesa no período"
+                description="Adicione despesas usando o formulário acima."
+              />
+            )}
             {despesas.map((d, i) => (
               <motion.div
                 key={d.id}
@@ -97,7 +124,7 @@ export default function DespesasPage() {
                 <span style={{ fontSize: '0.75rem', color: '#4a5568' }}>{formatDate(d.data)}</span>
                 <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#ef4444' }}>{formatCurrency(d.valor)}</span>
                 <button
-                  onClick={() => deletar(d.id)}
+                  onClick={() => deletar(d.id, d.descricao)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(239,68,68,0.4)', padding: 4 }}
                   onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(239,68,68,0.4)')}
@@ -106,11 +133,6 @@ export default function DespesasPage() {
                 </button>
               </motion.div>
             ))}
-            {despesas.length === 0 && (
-              <div className="glass-card p-8 text-center" style={{ color: '#4a5568', fontSize: '0.875rem' }}>
-                Nenhuma despesa no período
-              </div>
-            )}
           </div>
         </div>
 
@@ -118,15 +140,21 @@ export default function DespesasPage() {
           <h3 style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8b949e', marginBottom: 12, fontWeight: 600 }}>
             Por Categoria
           </h3>
-          <ExpensePieChart data={pieData} />
-          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {Object.entries(porCategoria).map(([cat, val]) => (
-              <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <NeonBadge label={cat} />
-                <span style={{ fontSize: '0.75rem', color: '#8b949e', fontWeight: 600 }}>{formatCurrency(val as number)}</span>
+          {pieData.length > 0 ? (
+            <>
+              <ExpensePieChart data={pieData} />
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {Object.entries(porCategoria).map(([cat, val]) => (
+                  <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <NeonBadge label={cat} />
+                    <span style={{ fontSize: '0.75rem', color: '#8b949e', fontWeight: 600 }}>{formatCurrency(val as number)}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <p style={{ color: '#4a5568', fontSize: '0.8rem', textAlign: 'center', padding: '24px 0' }}>Sem dados</p>
+          )}
         </div>
       </div>
     </div>

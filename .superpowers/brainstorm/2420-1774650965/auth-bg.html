@@ -1,0 +1,110 @@
+<h2>Qual fundo combina melhor?</h2>
+<p class="subtitle">Mesmo form central — só o background muda</p>
+
+<div class="cards">
+
+  <!-- OPÇÃO A: Gradient blobs (Stripe/Linear style) -->
+  <div class="card" data-choice="blobs" onclick="toggleSelect(this)">
+    <div class="card-image" style="position:relative;overflow:hidden;min-height:240px;background:#0d1117;display:flex;align-items:center;justify-content:center;">
+      <!-- Blobs -->
+      <div style="position:absolute;top:-40px;left:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(245,158,11,0.18),transparent 70%);border-radius:50%;filter:blur(20px);"></div>
+      <div style="position:absolute;bottom:-40px;right:-20px;width:160px;height:160px;background:radial-gradient(circle,rgba(139,92,246,0.15),transparent 70%);border-radius:50%;filter:blur(20px);"></div>
+      <div style="position:absolute;top:50%;left:60%;width:120px;height:120px;background:radial-gradient(circle,rgba(16,185,129,0.1),transparent 70%);border-radius:50%;filter:blur(16px);"></div>
+      <!-- Form card -->
+      <div style="position:relative;z-index:2;background:rgba(22,27,34,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px;width:220px;backdrop-filter:blur(12px);">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="color:#f59e0b;font-size:1.1rem;font-weight:900;letter-spacing:2px;">GESTÃO PRO</div>
+          <div style="color:#8b949e;font-size:0.6rem;margin-top:2px;">14 dias grátis · Sem cartão</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:rgba(31,41,55,0.8);border:1px solid rgba(255,255,255,0.07);border-radius:6px;height:28px;"></div>
+          <div style="background:rgba(31,41,55,0.8);border:1px solid rgba(255,255,255,0.07);border-radius:6px;height:28px;"></div>
+          <div style="background:#f59e0b;border-radius:6px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:#000;">Começar grátis →</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Gradient Blobs</h3>
+      <p>Manchas de cor suaves no fundo (âmbar + roxo + verde). Estilo Stripe, Linear, Vercel. Elegante e moderno.</p>
+    </div>
+  </div>
+
+  <!-- OPÇÃO B: Grid + glow (dashboard preview) -->
+  <div class="card" data-choice="grid" onclick="toggleSelect(this)">
+    <div class="card-image" style="position:relative;overflow:hidden;min-height:240px;background:#0d1117;display:flex;align-items:center;justify-content:center;">
+      <!-- Grid pattern -->
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(245,158,11,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,0.04) 1px,transparent 1px);background-size:24px 24px;"></div>
+      <!-- Center glow -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:200px;background:radial-gradient(ellipse,rgba(245,158,11,0.08),transparent 70%);"></div>
+      <!-- Mini dashboard preview blurred in background -->
+      <div style="position:absolute;right:-30px;top:10px;opacity:0.12;transform:rotate(6deg) scale(0.7);">
+        <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:8px;width:160px;">
+          <div style="background:#f59e0b;height:6px;border-radius:3px;margin-bottom:4px;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin-bottom:4px;">
+            <div style="background:#1f2937;border-radius:3px;height:20px;"></div>
+            <div style="background:#1f2937;border-radius:3px;height:20px;"></div>
+            <div style="background:#1f2937;border-radius:3px;height:20px;"></div>
+          </div>
+          <div style="background:#1f2937;border-radius:3px;height:40px;"></div>
+        </div>
+      </div>
+      <!-- Form card -->
+      <div style="position:relative;z-index:2;background:rgba(22,27,34,0.9);border:1px solid rgba(245,158,11,0.15);border-radius:12px;padding:24px;width:220px;box-shadow:0 0 40px rgba(245,158,11,0.06);">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="color:#f59e0b;font-size:1.1rem;font-weight:900;letter-spacing:2px;">GESTÃO PRO</div>
+          <div style="color:#8b949e;font-size:0.6rem;margin-top:2px;">14 dias grátis · Sem cartão</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#1f2937;border:1px solid #30363d;border-radius:6px;height:28px;"></div>
+          <div style="background:#1f2937;border:1px solid #30363d;border-radius:6px;height:28px;"></div>
+          <div style="background:#f59e0b;border-radius:6px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:#000;">Começar grátis →</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Grid + Dashboard Preview</h3>
+      <p>Grade sutil âmbar no fundo, preview fantasma do dashboard ao fundo. Mostra o produto antes de o usuário entrar.</p>
+    </div>
+  </div>
+
+  <!-- OPÇÃO C: Split com stats reais -->
+  <div class="card" data-choice="split-stats" onclick="toggleSelect(this)">
+    <div class="card-image" style="position:relative;overflow:hidden;min-height:240px;background:#0d1117;display:flex;">
+      <!-- Left side: branding + stats -->
+      <div style="flex:1;background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(139,92,246,0.06));padding:16px;display:flex;flex-direction:column;justify-content:center;gap:10px;border-right:1px solid rgba(255,255,255,0.06);">
+        <div style="color:#f59e0b;font-size:1rem;font-weight:900;letter-spacing:1px;">GESTÃO PRO</div>
+        <div style="font-size:0.6rem;color:#8b949e;line-height:1.5;">Controle total de obras, receitas e custos da sua empresa</div>
+        <!-- Mini KPIs -->
+        <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px;">
+          <div style="background:rgba(22,27,34,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:5px 8px;">
+            <div style="font-size:0.55rem;color:#4a5568;text-transform:uppercase;">Faturamento</div>
+            <div style="font-size:0.8rem;font-weight:800;color:#f59e0b;">R$ 48.200</div>
+          </div>
+          <div style="background:rgba(22,27,34,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:5px 8px;">
+            <div style="font-size:0.55rem;color:#4a5568;text-transform:uppercase;">Lucro Líquido</div>
+            <div style="font-size:0.8rem;font-weight:800;color:#10b981;">R$ 18.900</div>
+          </div>
+          <div style="font-size:0.55rem;color:#4a5568;margin-top:2px;">✓ DRE automático · ✓ Metas · ✓ Obras</div>
+        </div>
+      </div>
+      <!-- Right side: form -->
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:16px;">
+        <div style="width:100%;">
+          <div style="font-size:0.75rem;font-weight:700;color:#f0f6fc;margin-bottom:12px;text-align:center;">Criar conta</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="background:#1f2937;border:1px solid #30363d;border-radius:5px;height:26px;"></div>
+            <div style="background:#1f2937;border:1px solid #30363d;border-radius:5px;height:26px;"></div>
+            <div style="background:#1f2937;border:1px solid #30363d;border-radius:5px;height:26px;"></div>
+            <div style="background:#f59e0b;border-radius:5px;height:28px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#000;">Começar grátis →</div>
+            <div style="font-size:0.55rem;color:#4a5568;text-align:center;">Já tem conta? <span style="color:#f59e0b;">Entrar</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Split com KPIs do produto</h3>
+      <p>Metade esquerda mostra números reais do que o sistema entrega. Convence o cliente enquanto ele preenche o form.</p>
+    </div>
+  </div>
+
+</div>

@@ -3,27 +3,39 @@
 import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { NeonBadge } from '@/components/ui/NeonBadge'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { formatCurrency, formatDate } from '@/lib/formatters'
+import { useToast } from '@/components/ui/Toast'
+import { Inbox } from 'lucide-react'
 
 const PRAZO_ORDER = ['AVISTA', '7D', '30D', '60D', '90D']
 
 export default function ReceberPage() {
+  const { success, error: toastError } = useToast()
   const [pagamentos, setPagamentos] = useState<any[]>([])
   const [filtro, setFiltro] = useState<'PENDENTE' | 'RECEBIDO' | ''>('PENDENTE')
 
   const load = useCallback(async () => {
-    setPagamentos(await (await fetch('/api/pagamentos')).json())
+    const res = await fetch('/api/pagamentos')
+    if (res.ok) setPagamentos(await res.json())
   }, [])
 
   useEffect(() => { load() }, [load])
 
   const marcar = async (id: number, status: string) => {
-    await fetch(`/api/pagamentos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    })
-    load()
+    try {
+      const res = await fetch(`/api/pagamentos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) throw new Error()
+      await load()
+      if (status === 'RECEBIDO') success('Pagamento recebido', 'Status atualizado com sucesso')
+      else success('Marcado como pendente', 'Status revertido')
+    } catch {
+      toastError('Erro ao atualizar', 'Tente novamente')
+    }
   }
 
   const hoje = new Date()
@@ -36,8 +48,10 @@ export default function ReceberPage() {
     return acc
   }, {} as Record<string, any[]>)
 
+  const temDados = PRAZO_ORDER.some(p => (porPrazo[p]?.length ?? 0) > 0)
+
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f6fc' }}>Contas a Receber</h1>
@@ -69,6 +83,14 @@ export default function ReceberPage() {
           ))}
         </div>
       </div>
+
+      {!temDados && (
+        <EmptyState
+          icon={<Inbox size={22} />}
+          title={filtro ? `Nenhum pagamento ${filtro === 'PENDENTE' ? 'pendente' : 'recebido'}` : 'Nenhum pagamento encontrado'}
+          description="Os pagamentos aparecem aqui conforme forem adicionados às obras."
+        />
+      )}
 
       {PRAZO_ORDER.map(prazo => {
         const items = porPrazo[prazo]
@@ -119,11 +141,6 @@ export default function ReceberPage() {
           </div>
         )
       })}
-      {filtrados.length === 0 && (
-        <div className="glass-card p-10 text-center" style={{ color: '#4a5568', fontSize: '0.875rem' }}>
-          Nenhum pagamento encontrado
-        </div>
-      )}
     </div>
   )
 }
