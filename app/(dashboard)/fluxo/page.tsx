@@ -6,7 +6,9 @@ import { NeonBadge } from '@/components/ui/NeonBadge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, LineChart, Line } from 'recharts'
-import { TrendingUp, TrendingDown, Wallet, AlertCircle } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet, AlertCircle, Plus, Trash2 } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
+import { useConfirm } from '@/components/ui/ConfirmModal'
 
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 
@@ -19,18 +21,66 @@ const tooltipStyle = {
 }
 
 export default function FluxoPage() {
+  const { success, error: toastError } = useToast()
+  const confirm = useConfirm()
   const now = new Date()
   const [mes, setMes] = useState(now.getMonth() + 1)
   const [ano, setAno] = useState(now.getFullYear())
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [entradasAvulsas, setEntradasAvulsas] = useState<any[]>([])
+
+  // Formulário entrada avulsa
+  const [showForm, setShowForm] = useState(false)
+  const [descricao, setDescricao] = useState('')
+  const [valor, setValor] = useState('')
+  const [dataEntrada, setDataEntrada] = useState(now.toISOString().slice(0, 10))
+  const [saving, setSaving] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
-    const res = await fetch(`/api/fluxo?mes=${mes}&ano=${ano}`)
-    if (res.ok) setData(await res.json())
+    const [fluxoRes, entradasRes] = await Promise.all([
+      fetch(`/api/fluxo?mes=${mes}&ano=${ano}`),
+      fetch(`/api/entradas?mes=${mes}&ano=${ano}`),
+    ])
+    if (fluxoRes.ok) setData(await fluxoRes.json())
+    if (entradasRes.ok) setEntradasAvulsas(await entradasRes.json())
     setLoading(false)
   }, [mes, ano])
+
+  const salvarEntrada = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      const res = await fetch('/api/entradas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ descricao, valor, data: dataEntrada }),
+      })
+      if (!res.ok) throw new Error()
+      setDescricao(''); setValor('')
+      setShowForm(false)
+      await load()
+      success('Entrada registrada', 'Lançamento salvo com sucesso')
+    } catch {
+      toastError('Erro ao salvar', 'Tente novamente')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const deletarEntrada = async (id: number, desc: string) => {
+    const ok = await confirm({ title: 'Remover entrada?', message: `"${desc}" será excluída.`, confirmLabel: 'Remover', danger: true })
+    if (!ok) return
+    try {
+      const res = await fetch(`/api/entradas/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      await load()
+      success('Entrada removida', 'Registro excluído')
+    } catch {
+      toastError('Erro ao remover', 'Tente novamente')
+    }
+  }
 
   useEffect(() => { load() }, [load])
 
@@ -100,6 +150,62 @@ export default function FluxoPage() {
               <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f59e0b' }}>{formatCurrency(data.totalPendente)}</div>
               <div style={{ fontSize: '0.7rem', color: '#4a5568', marginTop: 2 }}>Total pendente</div>
             </div>
+          </motion.div>
+
+          {/* Entradas Avulsas */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass-card p-5">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <h2 style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8b949e' }}>
+                Entradas Avulsas — {MESES[mes-1]}
+              </h2>
+              <button
+                onClick={() => setShowForm(!showForm)}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', fontWeight: 600, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 6, padding: '5px 10px', cursor: 'pointer' }}
+              >
+                <Plus size={13} /> Nova Entrada
+              </button>
+            </div>
+
+            {showForm && (
+              <form onSubmit={salvarEntrada} style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'flex-end', background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.15)', borderRadius: 8, padding: 12 }}>
+                <div style={{ flex: 2, minWidth: 160 }}>
+                  <label style={{ fontSize: '0.65rem', color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 4 }}>Descrição</label>
+                  <input required value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Ex: Venda à vista, PIX recebido…" className="input-field" style={{ fontSize: '0.85rem' }} />
+                </div>
+                <div style={{ minWidth: 120 }}>
+                  <label style={{ fontSize: '0.65rem', color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 4 }}>Valor (R$)</label>
+                  <input required type="number" step="0.01" value={valor} onChange={e => setValor(e.target.value)} placeholder="0,00" className="input-field" style={{ fontSize: '0.85rem' }} />
+                </div>
+                <div style={{ minWidth: 140 }}>
+                  <label style={{ fontSize: '0.65rem', color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 4 }}>Data</label>
+                  <input required type="date" value={dataEntrada} onChange={e => setDataEntrada(e.target.value)} className="input-field" style={{ fontSize: '0.85rem' }} />
+                </div>
+                <button type="submit" disabled={saving} className="btn-primary" style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }}>
+                  {saving ? 'Salvando…' : 'Salvar'}
+                </button>
+              </form>
+            )}
+
+            {entradasAvulsas.length === 0 ? (
+              <p style={{ color: '#4a5568', fontSize: '0.8rem', textAlign: 'center', padding: '16px 0' }}>Nenhuma entrada avulsa neste mês.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {entradasAvulsas.map((e: any, i: number) => (
+                  <motion.div key={e.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.02)', border: '1px solid #30363d' }}>
+                    <span style={{ flex: 1, fontSize: '0.85rem', color: '#f0f6fc' }}>{e.descricao}</span>
+                    <span style={{ fontSize: '0.75rem', color: '#4a5568' }}>{formatDate(e.data)}</span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#10b981' }}>{formatCurrency(e.valor)}</span>
+                    <button onClick={() => deletarEntrada(e.id, e.descricao)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(239,68,68,0.4)', padding: 4 }}
+                      onMouseEnter={ev => (ev.currentTarget.style.color = '#ef4444')}
+                      onMouseLeave={ev => (ev.currentTarget.style.color = 'rgba(239,68,68,0.4)')}>
+                      <Trash2 size={13} />
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

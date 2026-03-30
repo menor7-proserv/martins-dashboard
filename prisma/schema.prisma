@@ -14,9 +14,10 @@ model User {
   empresa   String
   createdAt DateTime  @default(now())
 
-  clientes  Cliente[]
-  despesas  Despesa[]
-  metas     Meta[]
+  clientes       Cliente[]
+  despesas       Despesa[]
+  metas          Meta[]
+  entradasAvulsas EntradaAvulsa[]
 }
 
 model Cliente {
@@ -56,6 +57,16 @@ model Despesa {
   id        Int      @id @default(autoincrement())
   userId    String
   categoria String
+  descricao String
+  valor     Float
+  data      DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  criadoEm DateTime @default(now())
+}
+
+model EntradaAvulsa {
+  id        Int      @id @default(autoincrement())
+  userId    String
   descricao String
   valor     Float
   data      DateTime

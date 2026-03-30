@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const inicio = new Date(ano, mes - 1, 1)
   const fim = new Date(ano, mes, 0, 23, 59, 59)
 
-  const [pagamentosRecebidos, despesas, pagamentosPendentes] = await Promise.all([
+  const [pagamentosRecebidos, entradasAvulsas, despesas, pagamentosPendentes] = await Promise.all([
     prisma.pagamento.findMany({
       where: {
         status: 'RECEBIDO',
@@ -22,6 +22,9 @@ export async function GET(request: Request) {
         obra: { cliente: { userId } },
       },
       include: { obra: { include: { cliente: true } } },
+    }),
+    prisma.entradaAvulsa.findMany({
+      where: { userId, data: { gte: inicio, lte: fim } },
     }),
     prisma.despesa.findMany({
       where: { userId, data: { gte: inicio, lte: fim } },
@@ -40,9 +43,9 @@ export async function GET(request: Request) {
   const diasNoMes = new Date(ano, mes, 0).getDate()
   const dias = Array.from({ length: diasNoMes }, (_, i) => {
     const dia = i + 1
-    const entradas = pagamentosRecebidos
-      .filter(p => new Date(p.vencimento).getDate() === dia)
-      .reduce((s, p) => s + p.valor, 0)
+    const entradas =
+      pagamentosRecebidos.filter(p => new Date(p.vencimento).getDate() === dia).reduce((s, p) => s + p.valor, 0) +
+      entradasAvulsas.filter(e => new Date(e.data).getDate() === dia).reduce((s, e) => s + e.valor, 0)
     const saidas = despesas
       .filter(d => new Date(d.data).getDate() === dia)
       .reduce((s, d) => s + d.valor, 0)
@@ -56,7 +59,9 @@ export async function GET(request: Request) {
     return { ...d, acumulado }
   })
 
-  const totalEntradas = pagamentosRecebidos.reduce((s, p) => s + p.valor, 0)
+  const totalEntradas =
+    pagamentosRecebidos.reduce((s, p) => s + p.valor, 0) +
+    entradasAvulsas.reduce((s, e) => s + e.valor, 0)
   const totalSaidas = despesas.reduce((s, d) => s + d.valor, 0)
   const totalPendente = pagamentosPendentes.reduce((s, p) => s + p.valor, 0)
 
