@@ -17,16 +17,19 @@ export async function GET(request: Request) {
 
   const wb = XLSX.utils.book_new()
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(
-    obras.map(o => ({ Cliente: o.cliente.nome, Descrição: o.descricao, Valor: o.valorTotal, Data: o.data.toLocaleDateString('pt-BR'), Status: o.status }))
+    (obras as any[]).map((o: any) => ({ Cliente: o.cliente.nome, Descrição: o.descricao, Valor: o.valorTotal, Data: o.data.toLocaleDateString('pt-BR'), Status: o.status }))
   ), 'Obras')
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(
-    despesas.map(d => ({ Categoria: d.categoria, Descrição: d.descricao, Valor: d.valor, Data: d.data.toLocaleDateString('pt-BR') }))
+    (despesas as any[]).map((d: any) => ({ Categoria: d.categoria, Descrição: d.descricao, Valor: d.valor, Data: d.data.toLocaleDateString('pt-BR') }))
   ), 'Despesas')
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(
-    pagamentos.map(p => ({ Cliente: p.obra.cliente.nome, Obra: p.obra.descricao, Valor: p.valor, Prazo: p.prazo, Vencimento: p.vencimento.toLocaleDateString('pt-BR'), Status: p.status }))
+    (pagamentos as any[]).map((p: any) => ({ Cliente: p.obra.cliente.nome, Obra: p.obra.descricao, Valor: p.valor, Prazo: p.prazo, Vencimento: p.vencimento.toLocaleDateString('pt-BR'), Status: p.status }))
   ), 'Pagamentos')
 
   const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
