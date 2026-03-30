@@ -44,8 +44,8 @@ export default function LoginPage() {
 
       <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 380, padding: '0 16px' }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ color: '#f59e0b', fontSize: '1.5rem', fontWeight: 900, letterSpacing: '3px' }}>MARTINS PRO SERV</div>
-          <div style={{ color: '#8b949e', fontSize: '0.8rem', marginTop: 4 }}>Esquadrias de Alumínio &amp; Vidraçaria</div>
+          <div style={{ color: '#f59e0b', fontSize: '1.5rem', fontWeight: 900, letterSpacing: '3px' }}>GESTÃO FINANCEIRA</div>
+          <div style={{ color: '#8b949e', fontSize: '0.8rem', marginTop: 4 }}>Painel de controle financeiro</div>
         </div>
 
         <form onSubmit={submit} style={{
