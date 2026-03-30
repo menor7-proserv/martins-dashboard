@@ -79,7 +79,13 @@ export default function DrePage() {
   }, [mes, ano])
 
   const d = data?.atual
+  const anterior = data?.historico[data.historico.length - 2]
   const anos = [now.getFullYear(), now.getFullYear() - 1]
+
+  const variacao = (atual: number, prev: number | undefined) => {
+    if (!prev || prev === 0) return null
+    return ((atual - prev) / Math.abs(prev)) * 100
+  }
 
   return (
     <div style={{ maxWidth: 1024, margin: '0 auto' }}>
@@ -105,17 +111,31 @@ export default function DrePage() {
           {/* KPIs rápidos */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[
-              { label: 'Receita Bruta',  value: d.receitaBruta, color: '#f59e0b',  suffix: `${d.qtdObras} obras` },
-              { label: 'Lucro Bruto',    value: d.lucroBruto,   color: '#10b981',  suffix: `Margem ${formatPercent(d.margemBruta)}` },
-              { label: 'Lucro Operac.', value: d.lucroOp,       color: '#8b5cf6',  suffix: `Margem ${formatPercent(d.margemOp)}` },
-              { label: 'Lucro Líquido', value: d.lucroLiquido,  color: d.lucroLiquido >= 0 ? '#10b981' : '#ef4444', suffix: `Margem ${formatPercent(d.margemLiquida)}` },
-            ].map(k => (
+              { label: 'Receita Bruta',  value: d.receitaBruta, prev: anterior?.receitaBruta, color: '#f59e0b',  suffix: `${d.qtdObras} obras` },
+              { label: 'Lucro Bruto',    value: d.lucroBruto,   prev: anterior?.lucroBruto,   color: '#10b981',  suffix: `Margem ${formatPercent(d.margemBruta)}` },
+              { label: 'Lucro Operac.', value: d.lucroOp,       prev: anterior?.lucroOp,      color: '#8b5cf6',  suffix: `Margem ${formatPercent(d.margemOp)}` },
+              { label: 'Lucro Líquido', value: d.lucroLiquido,  prev: anterior?.lucroLiquido, color: d.lucroLiquido >= 0 ? '#10b981' : '#ef4444', suffix: `Margem ${formatPercent(d.margemLiquida)}` },
+            ].map(k => {
+              const v = variacao(k.value, k.prev)
+              return (
               <div key={k.label} className="glass-card p-4">
                 <div style={{ fontSize: '0.7rem', color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>{k.label}</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'monospace', color: k.color }}>{formatCurrency(k.value)}</div>
-                <div style={{ fontSize: '0.7rem', color: '#4a5568', marginTop: 4 }}>{k.suffix}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <span style={{ fontSize: '0.7rem', color: '#4a5568' }}>{k.suffix}</span>
+                  {v !== null && (
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '1px 5px', borderRadius: 4,
+                      background: v >= 0 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                      color: v >= 0 ? '#10b981' : '#ef4444',
+                      border: `1px solid ${v >= 0 ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                    }}>
+                      {v >= 0 ? '+' : ''}{v.toFixed(1)}%
+                    </span>
+                  )}
+                </div>
               </div>
-            ))}
+            )})}
+
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

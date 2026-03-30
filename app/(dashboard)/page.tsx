@@ -11,7 +11,7 @@ import { ExpensePieChart } from '@/components/charts/ExpensePieChart'
 import { ExportButton } from '@/components/ui/ExportButton'
 import { KpiSkeleton, ChartSkeleton } from '@/components/ui/Skeleton'
 import { formatCurrency } from '@/lib/formatters'
-import { TrendingDown, TrendingUp } from 'lucide-react'
+import { TrendingDown, TrendingUp, AlertTriangle, Clock } from 'lucide-react'
 
 interface ContaAReceber {
   prazo: string
@@ -39,6 +39,7 @@ export default function DashboardPage() {
   const [ano, setAno] = useState(now.getFullYear())
   const [data, setData] = useState<DashboardData | null>(null)
   const [error, setError] = useState(false)
+  const [alertas, setAlertas] = useState<{ vencidos: any[]; vencendoEm7: any[]; totalVencido: number; totalVencendo: number } | null>(null)
 
   useEffect(() => {
     setData(null); setError(false)
@@ -46,6 +47,10 @@ export default function DashboardPage() {
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
       .then(setData).catch(() => setError(true))
   }, [mes, ano])
+
+  useEffect(() => {
+    fetch('/api/alertas').then(r => r.ok ? r.json() : null).then(setAlertas)
+  }, [])
 
   const loading = !data && !error
   const totalReceber = data?.contasAReceber.reduce((s, c) => s + (c._sum.valor ?? 0), 0) ?? 0
@@ -71,6 +76,42 @@ export default function DashboardPage() {
           <ExportButton mes={mes} ano={ano} />
         </div>
       </div>
+
+      {/* Alertas de vencimento */}
+      {alertas && (alertas.vencidos.length > 0 || alertas.vencendoEm7.length > 0) && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {alertas.vencidos.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8 }}>
+              <AlertTriangle size={16} color="#ef4444" style={{ flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#ef4444' }}>
+                  {alertas.vencidos.length} pagamento(s) vencido(s)
+                </span>
+                <span style={{ fontSize: '0.8rem', color: '#8b949e', marginLeft: 8 }}>
+                  Total: {formatCurrency(alertas.totalVencido)}
+                </span>
+              </div>
+              <a href="/receber" style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>Ver →</a>
+            </motion.div>
+          )}
+          {alertas.vencendoEm7.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 8 }}>
+              <Clock size={16} color="#f59e0b" style={{ flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f59e0b' }}>
+                  {alertas.vencendoEm7.length} pagamento(s) vencem nos próximos 7 dias
+                </span>
+                <span style={{ fontSize: '0.8rem', color: '#8b949e', marginLeft: 8 }}>
+                  Total: {formatCurrency(alertas.totalVencendo)}
+                </span>
+              </div>
+              <a href="/receber" style={{ fontSize: '0.75rem', color: '#f59e0b', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>Ver →</a>
+            </motion.div>
+          )}
+        </div>
+      )}
 
       {error && (
         <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '0.75rem 1rem', color: '#ef4444', fontSize: '0.875rem' }}>
