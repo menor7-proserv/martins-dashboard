@@ -7,7 +7,7 @@ import { useSession, signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Users, Receipt, CreditCard,
   TrendingUp, Target, Menu, X, LogOut, ChevronRight,
-  Building2, ArrowLeftRight, FileText
+  Building2, ArrowLeftRight, FileText, AlertOctagon, Settings
 } from 'lucide-react'
 
 const NAV_GROUPS = [
@@ -27,11 +27,18 @@ const NAV_GROUPS = [
   {
     label: 'Financeiro',
     items: [
-      { href: '/despesas',  label: 'Despesas',       Icon: Receipt },
-      { href: '/fluxo',    label: 'Fluxo de Caixa', Icon: ArrowLeftRight },
-      { href: '/dre',      label: 'DRE',            Icon: TrendingUp },
-      { href: '/metas',    label: 'Metas',           Icon: Target },
-      { href: '/orcamento', label: 'Orçamento',      Icon: FileText },
+      { href: '/despesas',      label: 'Despesas',       Icon: Receipt },
+      { href: '/fluxo',         label: 'Fluxo de Caixa', Icon: ArrowLeftRight },
+      { href: '/dre',           label: 'DRE',            Icon: TrendingUp },
+      { href: '/metas',         label: 'Metas',          Icon: Target },
+      { href: '/orcamento',     label: 'Orçamento',      Icon: FileText },
+      { href: '/inadimplencia', label: 'Inadimplência',  Icon: AlertOctagon },
+    ],
+  },
+  {
+    label: 'Conta',
+    items: [
+      { href: '/configuracoes', label: 'Configurações', Icon: Settings },
     ],
   },
 ]
