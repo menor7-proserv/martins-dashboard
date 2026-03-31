@@ -14,10 +14,13 @@ model User {
   empresa   String
   createdAt DateTime  @default(now())
 
-  clientes       Cliente[]
-  despesas       Despesa[]
-  metas          Meta[]
-  entradasAvulsas EntradaAvulsa[]
+  clientes            Cliente[]
+  despesas            Despesa[]
+  metas               Meta[]
+  entradasAvulsas     EntradaAvulsa[]
+  fornecedores        Fornecedor[]
+  contasPagar         ContaPagar[]
+  despesasRecorrentes DespesaRecorrente[]
 }
 
 model Cliente {
@@ -31,15 +34,17 @@ model Cliente {
 }
 
 model Obra {
-  id          Int         @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   clienteId   Int
   descricao   String
   valorTotal  Float
   data        DateTime
-  status      String      @default("ABERTA")
+  status      String       @default("ABERTA")
   pagamentos  Pagamento[]
-  cliente     Cliente     @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  criadoEm   DateTime    @default(now())
+  despesas    Despesa[]
+  contasPagar ContaPagar[]
+  cliente     Cliente      @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  criadoEm   DateTime     @default(now())
 }
 
 model Pagamento {
@@ -60,6 +65,8 @@ model Despesa {
   descricao String
   valor     Float
   data      DateTime
+  obraId    Int?
+  obra      Obra?    @relation(fields: [obraId], references: [id])
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   criadoEm DateTime @default(now())
 }
@@ -83,4 +90,43 @@ model Meta {
   metaLucro        Float
   user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([mes, ano, userId])
+}
+
+model Fornecedor {
+  id          Int          @id @default(autoincrement())
+  userId      String
+  nome        String
+  telefone    String?
+  categoria   String?
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contasPagar ContaPagar[]
+  criadoEm   DateTime     @default(now())
+}
+
+model ContaPagar {
+  id           Int         @id @default(autoincrement())
+  userId       String
+  fornecedorId Int?
+  descricao    String
+  categoria    String
+  valor        Float
+  vencimento   DateTime
+  status       String      @default("PENDENTE")
+  obraId       Int?
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fornecedor   Fornecedor? @relation(fields: [fornecedorId], references: [id])
+  obra         Obra?       @relation(fields: [obraId], references: [id])
+  criadoEm    DateTime    @default(now())
+}
+
+model DespesaRecorrente {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  descricao String
+  categoria String
+  valor     Float
+  diaVencto Int
+  ativo     Boolean  @default(true)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  criadoEm DateTime @default(now())
 }

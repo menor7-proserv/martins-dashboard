@@ -1,38 +1,43 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Users, Receipt, CreditCard,
   TrendingUp, Target, Menu, X, LogOut, ChevronRight,
-  Building2, ArrowLeftRight, FileText, AlertOctagon, Settings
+  Building2, ArrowLeftRight, FileText, AlertOctagon, Settings,
+  Search, Truck, HardHat, RepeatIcon, Wallet
 } from 'lucide-react'
 
 const NAV_GROUPS = [
   {
     label: 'Principal',
     items: [
-      { href: '/',        label: 'Dashboard',  Icon: LayoutDashboard },
+      { href: '/', label: 'Dashboard', Icon: LayoutDashboard },
     ],
   },
   {
     label: 'Operacional',
     items: [
-      { href: '/clientes', label: 'Clientes & Obras', Icon: Users },
-      { href: '/receber',  label: 'A Receber',        Icon: CreditCard },
+      { href: '/clientes',    label: 'Clientes & Obras', Icon: Users },
+      { href: '/obras',       label: 'Lucratividade',    Icon: HardHat },
+      { href: '/fornecedores',label: 'Fornecedores',     Icon: Truck },
+      { href: '/receber',     label: 'A Receber',        Icon: CreditCard },
     ],
   },
   {
     label: 'Financeiro',
     items: [
-      { href: '/despesas',      label: 'Despesas',       Icon: Receipt },
-      { href: '/fluxo',         label: 'Fluxo de Caixa', Icon: ArrowLeftRight },
-      { href: '/dre',           label: 'DRE',            Icon: TrendingUp },
-      { href: '/metas',         label: 'Metas',          Icon: Target },
-      { href: '/orcamento',     label: 'Orçamento',      Icon: FileText },
-      { href: '/inadimplencia', label: 'Inadimplência',  Icon: AlertOctagon },
+      { href: '/despesas',      label: 'Despesas',        Icon: Receipt },
+      { href: '/contas-pagar',  label: 'Contas a Pagar',  Icon: Wallet },
+      { href: '/recorrentes',   label: 'Recorrentes',     Icon: RepeatIcon },
+      { href: '/fluxo',         label: 'Fluxo de Caixa',  Icon: ArrowLeftRight },
+      { href: '/dre',           label: 'DRE',             Icon: TrendingUp },
+      { href: '/metas',         label: 'Metas',           Icon: Target },
+      { href: '/orcamento',     label: 'Orçamento',       Icon: FileText },
+      { href: '/inadimplencia', label: 'Inadimplência',   Icon: AlertOctagon },
     ],
   },
   {
@@ -333,6 +338,161 @@ function SidebarContent({
   )
 }
 
+function GlobalSearch() {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState('')
+  const [results, setResults] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const search = useCallback(async (query: string) => {
+    if (query.length < 2) { setResults(null); return }
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/busca?q=${encodeURIComponent(query)}`)
+      if (res.ok) setResults(await res.json())
+    } finally { setLoading(false) }
+  }, [])
+
+  useEffect(() => {
+    const t = setTimeout(() => search(q), 300)
+    return () => clearTimeout(t)
+  }, [q, search])
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false); setQ(''); setResults(null)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 50)
+  }, [open])
+
+  const hasResults = results && (results.clientes?.length > 0 || results.obras?.length > 0 || results.despesas?.length > 0)
+  const noResults = results && !hasResults && q.length >= 2
+
+  const navigate = (href: string) => {
+    router.push(href)
+    setOpen(false); setQ(''); setResults(null)
+  }
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        title="Busca global"
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 36, height: 36, borderRadius: 8,
+          background: open ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${open ? 'rgba(245,158,11,0.3)' : 'rgba(255,255,255,0.06)'}`,
+          cursor: 'pointer', color: open ? '#f59e0b' : '#6b7280', transition: 'all 0.15s',
+          flexShrink: 0,
+        }}
+      >
+        <Search size={15} />
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 44, right: 0, width: 340,
+          background: '#161b22', border: '1px solid #30363d',
+          borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          zIndex: 200, overflow: 'hidden',
+        }}>
+          <div style={{ padding: '10px 12px', borderBottom: '1px solid #30363d' }}>
+            <div style={{ position: 'relative' }}>
+              <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#4a5568' }} />
+              <input
+                ref={inputRef}
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                placeholder="Buscar clientes, obras, despesas…"
+                style={{
+                  width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid #30363d',
+                  borderRadius: 6, padding: '8px 10px 8px 32px', color: '#f0f6fc', fontSize: '0.85rem',
+                  outline: 'none', boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ maxHeight: 360, overflowY: 'auto' }}>
+            {loading && <p style={{ padding: '12px 16px', color: '#4a5568', fontSize: '0.8rem' }}>Buscando...</p>}
+            {noResults && <p style={{ padding: '12px 16px', color: '#4a5568', fontSize: '0.8rem' }}>Nenhum resultado para "{q}"</p>}
+            {!q && <p style={{ padding: '12px 16px', color: '#4a5568', fontSize: '0.8rem' }}>Digite pelo menos 2 caracteres para buscar</p>}
+
+            {hasResults && (
+              <>
+                {results.clientes.length > 0 && (
+                  <div>
+                    <div style={{ padding: '8px 16px 4px', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#4a5568' }}>Clientes</div>
+                    {results.clientes.map((c: any) => (
+                      <button key={c.id} onClick={() => navigate(`/clientes/${c.id}`)}
+                        style={{ width: '100%', textAlign: 'left', padding: '9px 16px', background: 'none', border: 'none', cursor: 'pointer', color: '#f0f6fc', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: 10 }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, color: '#f59e0b', flexShrink: 0 }}>
+                          {c.nome.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 500 }}>{c.nome}</div>
+                          {c.telefone && <div style={{ fontSize: '0.72rem', color: '#4a5568' }}>{c.telefone}</div>}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {results.obras.length > 0 && (
+                  <div>
+                    <div style={{ padding: '8px 16px 4px', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#4a5568' }}>Obras</div>
+                    {results.obras.map((o: any) => (
+                      <button key={o.id} onClick={() => navigate(`/clientes/${o.cliente.id}`)}
+                        style={{ width: '100%', textAlign: 'left', padding: '9px 16px', background: 'none', border: 'none', cursor: 'pointer', color: '#f0f6fc', fontSize: '0.875rem' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.descricao}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#4a5568' }}>Cliente: {o.cliente.nome}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {results.despesas.length > 0 && (
+                  <div>
+                    <div style={{ padding: '8px 16px 4px', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#4a5568' }}>Despesas</div>
+                    {results.despesas.map((d: any) => (
+                      <button key={d.id} onClick={() => navigate('/despesas')}
+                        style={{ width: '100%', textAlign: 'left', padding: '9px 16px', background: 'none', border: 'none', cursor: 'pointer', color: '#f0f6fc', fontSize: '0.875rem' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.descricao}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#4a5568' }}>{d.categoria}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function ShellLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { data: session } = useSession()
@@ -457,11 +617,25 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
         className="main-content min-h-screen"
         style={{
           marginLeft: 68,
-          padding: '28px 32px',
           transition: 'margin-left 220ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        {children}
+        {/* Top bar with search */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 40,
+          display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+          padding: '10px 24px',
+          background: 'rgba(13,17,23,0.85)',
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid rgba(255,255,255,0.04)',
+        }}
+          className="topbar-search"
+        >
+          <GlobalSearch />
+        </div>
+        <div style={{ padding: '24px 32px' }}>
+          {children}
+        </div>
       </main>
     </>
   )

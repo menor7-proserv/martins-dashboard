@@ -11,7 +11,7 @@ import { ExpensePieChart } from '@/components/charts/ExpensePieChart'
 import { ExportButton } from '@/components/ui/ExportButton'
 import { KpiSkeleton, ChartSkeleton } from '@/components/ui/Skeleton'
 import { formatCurrency } from '@/lib/formatters'
-import { TrendingDown, TrendingUp, AlertTriangle, Clock } from 'lucide-react'
+import { TrendingDown, TrendingUp, AlertTriangle, Clock, HardHat } from 'lucide-react'
 
 interface ContaAReceber {
   prazo: string
@@ -26,6 +26,7 @@ interface DashboardData {
   historico: { mes: number; ano: number; faturamento: number; despesas: number }[]
   despesasPorCategoria: { categoria: string; _sum: { valor: number | null } }[]
   meta?: { metaFaturamento: number; metaLucro: number } | null
+  statusObras?: { status: string; _count: number }[]
 }
 
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
@@ -67,11 +68,13 @@ export default function DashboardPage() {
           <select
             value={`${mes}-${ano}`}
             onChange={e => { const [m,a] = e.target.value.split('-'); setMes(+m); setAno(+a) }}
-            className="input-field" style={{ width: 160, fontSize: '0.85rem' }}
+            className="input-field" style={{ width: 170, fontSize: '0.85rem' }}
           >
-            {Array.from({ length: 12 }, (_, i) => (
-              <option key={i} value={`${i+1}-${ano}`}>{MESES[i]} {ano}</option>
-            ))}
+            {Array.from({ length: 3 }, (_, yi) => now.getFullYear() - yi).flatMap(a =>
+              Array.from({ length: 12 }, (_, i) => (
+                <option key={`${i+1}-${a}`} value={`${i+1}-${a}`}>{MESES[i]} {a}</option>
+              ))
+            )}
           </select>
           <ExportButton mes={mes} ano={ano} />
         </div>
@@ -152,6 +155,35 @@ export default function DashboardPage() {
               <KpiCard label="Margem" value={data?.margem ?? 0} format="percent" accentColor="#3b82f6" loading={false} />
             </motion.div>
           </motion.div>
+
+          {/* Status das obras */}
+          {data?.statusObras && data.statusObras.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+              className="glass-card p-4">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <HardHat size={14} color="#f59e0b" />
+                <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8b949e' }}>
+                  Obras de {MESES[mes-1]}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {[
+                  { key: 'ABERTA',    label: 'Em andamento', color: '#f59e0b' },
+                  { key: 'CONCLUIDA', label: 'Concluídas',   color: '#10b981' },
+                  { key: 'CANCELADA', label: 'Canceladas',   color: '#6b7280' },
+                ].map(({ key, label, color }) => {
+                  const entry = data.statusObras!.find(s => s.status === key)
+                  return (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: '#8b949e' }}>{label}:</span>
+                      <span style={{ fontSize: '0.875rem', fontWeight: 800, color }}>{entry?._count ?? 0}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card p-5 lg:col-span-2">

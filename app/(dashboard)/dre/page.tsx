@@ -6,6 +6,7 @@ import { formatCurrency, formatPercent } from '@/lib/formatters'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
+import { FileDown } from 'lucide-react'
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
 
@@ -64,6 +65,67 @@ function Section({ title, accentColor, children }: { title: string; accentColor:
   )
 }
 
+async function exportDrePdf(mes: number, ano: string, d: DreMes) {
+  const { jsPDF } = await import('jspdf')
+  const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+  const W = doc.internal.pageSize.getWidth()
+  const fmt = (v: number) => `R$ ${Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+
+  // Header
+  doc.setFillColor(15, 17, 23)
+  doc.rect(0, 0, W, 40, 'F')
+  doc.setFontSize(20); doc.setTextColor(245, 158, 11); doc.setFont('helvetica', 'bold')
+  doc.text('DRE — Demonstrativo de Resultado', 14, 18)
+  doc.setFontSize(10); doc.setTextColor(139, 148, 158); doc.setFont('helvetica', 'normal')
+  doc.text(`${MESES_FULL[mes-1]} / ${ano}  ·  ${d.qtdObras} obras`, 14, 28)
+  doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W - 14, 28, { align: 'right' })
+
+  let y = 52
+  const row = (label: string, value: number, bold = false, indent = false) => {
+    if (bold) { doc.setFillColor(30, 35, 45); doc.rect(10, y - 5, W - 20, 9, 'F') }
+    doc.setFontSize(bold ? 11 : 10)
+    doc.setFont('helvetica', bold ? 'bold' : 'normal')
+    doc.setTextColor(bold ? 240 : 139, bold ? 246 : 148, bold ? 252 : 158)
+    doc.text(label, indent ? 22 : 14, y)
+    const color = value < 0 ? [239,68,68] : bold ? [245,158,11] : [240,246,252]
+    doc.setTextColor(color[0], color[1], color[2])
+    doc.text(fmt(value), W - 14, y, { align: 'right' })
+    y += bold ? 10 : 8
+  }
+  const section = (title: string) => {
+    y += 4
+    doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(100, 116, 139)
+    doc.text(title.toUpperCase(), 14, y); y += 7
+    doc.setDrawColor(48, 54, 61); doc.line(14, y - 3, W - 14, y - 3)
+  }
+
+  section('RECEITA')
+  row('(+) Receita Bruta de Serviços', d.receitaBruta)
+  row('(-) Impostos estimados', -d.impostos, false, true)
+  row('(=) Receita Líquida', d.receitaLiquida, true)
+
+  section('CUSTOS DOS SERVIÇOS')
+  row('(-) Material', -d.material, false, true)
+  row('(-) Mão de Obra', -d.maoDeObra, false, true)
+  row(`(=) Lucro Bruto  (margem ${d.margemBruta.toFixed(1)}%)`, d.lucroBruto, true)
+
+  section('DESPESAS OPERACIONAIS')
+  row('(-) Transporte / Outros', -d.transporte, false, true)
+  row(`(=) Lucro Operacional  (margem ${d.margemOp.toFixed(1)}%)`, d.lucroOp, true)
+
+  y += 6
+  doc.setFillColor(245, 158, 11, 0.15)
+  doc.setDrawColor(245, 158, 11); doc.roundedRect(10, y - 6, W - 20, 14, 3, 3, 'FD')
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold')
+  doc.setTextColor(240, 246, 252); doc.text('Lucro Líquido do Exercício', 16, y + 2)
+  const llColor = d.lucroLiquido >= 0 ? [16,185,129] : [239,68,68]
+  doc.setTextColor(llColor[0], llColor[1], llColor[2])
+  doc.text(fmt(d.lucroLiquido), W - 14, y + 2, { align: 'right' })
+
+  doc.save(`DRE_${MESES_FULL[mes-1]}_${ano}.pdf`)
+}
+
 export default function DrePage() {
   const now = new Date()
   const [mes, setMes] = useState(now.getMonth() + 1)
@@ -80,7 +142,7 @@ export default function DrePage() {
 
   const d = data?.atual
   const anterior = data?.historico[data.historico.length - 2]
-  const anos = [now.getFullYear(), now.getFullYear() - 1]
+  const anos = Array.from({ length: 4 }, (_, i) => now.getFullYear() - i)
 
   const variacao = (atual: number, prev: number | undefined) => {
     if (!prev || prev === 0) return null
@@ -94,13 +156,21 @@ export default function DrePage() {
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f6fc' }}>DRE</h1>
           <p style={{ fontSize: '0.8rem', color: '#8b949e', marginTop: 2 }}>Demonstrativo de Resultado do Exercício</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <select value={mes} onChange={e => setMes(+e.target.value)} className="input-field" style={{ width: 128, fontSize: '0.875rem' }}>
             {MESES.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
           </select>
           <select value={ano} onChange={e => setAno(+e.target.value)} className="input-field" style={{ width: 96, fontSize: '0.875rem' }}>
             {anos.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
+          {d && (
+            <button
+              onClick={() => exportDrePdf(mes, String(ano), d)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', fontWeight: 600, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              <FileDown size={14} /> PDF
+            </button>
+          )}
         </div>
       </div>
 

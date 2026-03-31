@@ -49,6 +49,12 @@ export async function GET(request: Request) {
 
   const meta = await prisma.meta.findUnique({ where: { mes_ano_userId: { mes, ano, userId } } })
 
+  const statusObras = await prisma.obra.groupBy({
+    by: ['status'],
+    where: { data: { gte: inicio, lte: fim }, cliente: { userId } },
+    _count: true,
+  })
+
   const historico = await Promise.all(
     Array.from({ length: 6 }, (_, i) => {
       const d = new Date(ano, mes - 1 - i, 1)
@@ -85,5 +91,6 @@ export async function GET(request: Request) {
     totalAReceber: totalReceber._sum.valor ?? 0,
     meta,
     historico: historico.reverse(),
+    statusObras,
   })
 }

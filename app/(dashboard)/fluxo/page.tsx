@@ -6,7 +6,7 @@ import { NeonBadge } from '@/components/ui/NeonBadge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, LineChart, Line } from 'recharts'
-import { TrendingUp, TrendingDown, Wallet, AlertCircle, Plus, Trash2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet, AlertCircle, Plus, Trash2, FileDown } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import { useConfirm } from '@/components/ui/ConfirmModal'
 
@@ -18,6 +18,71 @@ const tooltipStyle = {
   borderRadius: 8,
   fontSize: '0.75rem',
   color: '#f0f6fc',
+}
+
+async function exportFluxoPdf(mes: number, ano: number, data: any, entradasAvulsas: any[]) {
+  const { jsPDF } = await import('jspdf')
+  const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+  const W = doc.internal.pageSize.getWidth()
+  const fmt = (v: number) => `R$ ${Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+
+  // Header
+  doc.setFillColor(15, 17, 23)
+  doc.rect(0, 0, W, 40, 'F')
+  doc.setFontSize(20); doc.setTextColor(245, 158, 11); doc.setFont('helvetica', 'bold')
+  doc.text('Fluxo de Caixa', 14, 18)
+  doc.setFontSize(10); doc.setTextColor(139, 148, 158); doc.setFont('helvetica', 'normal')
+  doc.text(`${MESES_FULL[mes-1]} / ${ano}`, 14, 28)
+  doc.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`, W - 14, 28, { align: 'right' })
+
+  let y = 52
+  const kpiRow = (label: string, value: number, color: number[]) => {
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(139, 148, 158)
+    doc.text(label, 14, y)
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(color[0], color[1], color[2])
+    doc.text(fmt(value), W - 14, y, { align: 'right' })
+    y += 9
+  }
+
+  doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(100, 116, 139)
+  doc.text('RESUMO DO MÊS', 14, y); y += 6
+  doc.setDrawColor(48, 54, 61); doc.line(14, y, W - 14, y); y += 7
+  kpiRow('Total de Entradas', data.totalEntradas, [16, 185, 129])
+  kpiRow('Total de Saídas', data.totalSaidas, [239, 68, 68])
+  kpiRow('Saldo do Mês', data.saldo, data.saldo >= 0 ? [245,158,11] : [239,68,68])
+  kpiRow('A Receber (Pendente)', data.totalPendente, [245, 158, 11])
+
+  if (entradasAvulsas.length > 0) {
+    y += 6
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(100, 116, 139)
+    doc.text('ENTRADAS AVULSAS', 14, y); y += 6
+    doc.line(14, y, W - 14, y); y += 7
+    entradasAvulsas.forEach(e => {
+      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(240, 246, 252)
+      doc.text(e.descricao, 14, y)
+      doc.setTextColor(16, 185, 129)
+      doc.text(fmt(e.valor), W - 14, y, { align: 'right' })
+      y += 8
+    })
+  }
+
+  if (data.pendentes?.length > 0) {
+    y += 6
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(100, 116, 139)
+    doc.text('RECEBIMENTOS PENDENTES', 14, y); y += 6
+    doc.line(14, y, W - 14, y); y += 7
+    data.pendentes.slice(0, 20).forEach((p: any) => {
+      if (y > 270) return
+      doc.setFontSize(9.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(240, 246, 252)
+      doc.text(p.cliente, 14, y)
+      doc.setTextColor(p.vencido ? 239 : 245, p.vencido ? 68 : 158, p.vencido ? 68 : 11)
+      doc.text(fmt(p.valor), W - 14, y, { align: 'right' })
+      y += 7
+    })
+  }
+
+  doc.save(`FluxoCaixa_${MESES_FULL[mes-1]}_${ano}.pdf`)
 }
 
 export default function FluxoPage() {
@@ -95,16 +160,28 @@ export default function FluxoPage() {
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f6fc' }}>Fluxo de Caixa</h1>
           <p style={{ color: '#8b949e', fontSize: '0.8rem', marginTop: 2 }}>Entradas, saídas e projeção de recebimentos</p>
         </div>
-        <select
-          value={`${mes}-${ano}`}
-          onChange={e => { const [m,a] = e.target.value.split('-'); setMes(+m); setAno(+a) }}
-          className="input-field"
-          style={{ width: 160, fontSize: '0.85rem' }}
-        >
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i} value={`${i+1}-${ano}`}>{MESES[i]} {ano}</option>
-          ))}
-        </select>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <select
+            value={`${mes}-${ano}`}
+            onChange={e => { const [m,a] = e.target.value.split('-'); setMes(+m); setAno(+a) }}
+            className="input-field"
+            style={{ width: 170, fontSize: '0.85rem' }}
+          >
+            {Array.from({ length: 3 }, (_, yi) => now.getFullYear() - yi).flatMap(a =>
+              Array.from({ length: 12 }, (_, i) => (
+                <option key={`${i+1}-${a}`} value={`${i+1}-${a}`}>{MESES[i]} {a}</option>
+              ))
+            )}
+          </select>
+          {!loading && data && (
+            <button
+              onClick={() => exportFluxoPdf(mes, ano, data, entradasAvulsas)}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', fontWeight: 600, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              <FileDown size={14} /> PDF
+            </button>
+          )}
+        </div>
       </div>
 
       {/* KPI Cards */}

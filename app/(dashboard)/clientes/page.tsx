@@ -9,7 +9,8 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 import { useToast } from '@/components/ui/Toast'
 import { useConfirm } from '@/components/ui/ConfirmModal'
-import { ChevronDown, ChevronUp, Trash2, Pencil, Check, X, Users, Search } from 'lucide-react'
+import { ChevronDown, ChevronUp, Trash2, Pencil, Check, X, Users, Search, History } from 'lucide-react'
+import Link from 'next/link'
 
 const STATUS_OPTIONS = ['ABERTA', 'CONCLUIDA', 'CANCELADA']
 
@@ -289,6 +290,16 @@ export default function ClientesPage() {
                       <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#f59e0b' }}>{formatCurrency(totalObras)}</div>
                       {totalPendente > 0 && <div style={{ fontSize: '0.7rem', color: '#fb923c' }}>{formatCurrency(totalPendente)} pend.</div>}
                     </div>
+                    <Link
+                      href={`/clientes/${cliente.id}`}
+                      onClick={e => e.stopPropagation()}
+                      title="Ver histórico"
+                      style={{ display: 'flex', alignItems: 'center', color: 'rgba(139,148,158,0.5)', padding: 4, textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#8b5cf6')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'rgba(139,148,158,0.5)')}
+                    >
+                      <History size={13} />
+                    </Link>
                     <button
                       onClick={e => startEditCliente(cliente, e)}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(139,148,158,0.5)', padding: 4 }}
